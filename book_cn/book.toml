@@ -1,0 +1,17 @@
+[book]
+authors = ["Tom Kunc"]
+language = "en"
+multilingual = false
+src = "src"
+title = "LifetimeKata"
+
+[build]
+extra-watch-dirs = ["../exercises"]
+
+[preprocessor.keeper]
+[preprocessor.footnote]
+
+[output.html]
+no-section-label = true
+site-url = "/lifetimekata/"
+git-repository-url = "https://github.com/thinkgos/lifetimekata"

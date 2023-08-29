@@ -1,5 +1,7 @@
 # LifetimeKata
 
+[中文](https://thinkgos.github.io/lifetimekata/)
+
 Welcome to LifetimeKata, a set of exercises which you can use to improve your
 understanding of lifetimes in Rust. While many tasks involve writing compiling
 code, some will also involve creating specific errors.

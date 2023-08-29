@@ -15,7 +15,8 @@ Well, we could write a function like this:
 ``` rust,ignore
 struct SplitStr {
     start: &str,
-    end: &str
+    end: &strFunctions are not the only place where you will need explicit
+lifetimes. Types (structs and enums) can have lifetimes too.
 }
 
 fn split<'text, 'delim>(text: &'text str, delimiter: &'delim str) -> Option<SplitStr> {
