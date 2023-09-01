@@ -78,7 +78,7 @@ fn split<'text, 'delim>(text: &'text str, delimiter: &'delim str) -> Option<Spli
 现在, 当我们返回一个`Option<SplitStr<'text>>`, 编译器会知道结构体内部的引用必须与`'text`生命周期相同,
 如果我们试图返回一个`SplitStr`, 其中引用无法活到`'text`, 那将编译错误.
 
-## 关于枚举的注释
+## 关于枚举的说明
 
 在枚举中, 引用的使用方式与在结构体中的使用方式完全相同. 我们在这里不详细展开说明, 因为它们是可以互换的.
 

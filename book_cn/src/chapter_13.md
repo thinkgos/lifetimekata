@@ -1,0 +1,1 @@
+../../exercises/13_footnote_lifetime_on_impl_trait/README_CN.md

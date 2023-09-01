@@ -1,0 +1,1 @@
+../../exercises/11_footnote_lifetime_elision/README_CN.md

@@ -54,7 +54,8 @@ fn main() {
 
 `get_bool`函数根据传递给它的`true`或`false`返回一个包裹`Bool`的`trait`对象的`Box`.
 
-重要的是要意识到, 由于`trait`对象可能包含或不包含引用(或任意数量的引用), 所有`trait`对象都具有生命周期.即使`trait`的实现者没有包含引用, 这仍然成立.
+重要的是要意识到, 由于`trait`对象可能包含或不包含引用(或者任意数量的引用).
+**所有`trait`对象都具有生命周期. 即使`trait`的实现者没有包含引用, 这仍然成立.**
 (附注: https://doc.rust-lang.org/reference/types/trait-object.html#trait-object-lifetime-bounds)
 
 所以, 既然我们需要将生命周期与我们的`trait`对象关联起来, 我们可能会考虑依赖生命周期推断. 但是生命周期推断如何适用于我们的`get_bool`函数呢? 由于没有输入引用, 所以我们应该为`trait`对象指定什么输出生命周期呢? 在这里, 生命周期推断无法帮助我们.
@@ -134,4 +135,4 @@ error: could not compile __ due to previous error
 但实际情况并非如此.由于`trait`对象的特殊规则, 生命周期实际上是这样的：`fn get_bool<'elided>(b: &'elided bool) -> Box<dyn Bool + 'static>`.
 这个`'static`限定是不正确的.
 
-因此, 我们需要`'_`限定(正如这个错误消息所告诉我们的那样)来告诉`Rust`它应该使用普通的生命周期推断规则, 而不是特殊的`trait`对象规则.
+因此, 我们需要`'_`限定(正如这个错误消息所告诉我们的那样)来告诉`Rust`它应该使用通用的生命周期推断规则, 而不是特殊的`trait`对象规则.

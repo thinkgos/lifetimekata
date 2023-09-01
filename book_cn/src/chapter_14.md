@@ -1,0 +1,1 @@
+../../exercises/14_footnote_lifetime_hrtb_gat/README_CN.md

@@ -13,4 +13,5 @@ members = [
         "exercises/07_special_lifetimes/solutions",
         "exercises/08_finale/exercise",
         "exercises/08_finale/solutions",
+        "exercises/12_footnote_reborrow/exercise"
 ]

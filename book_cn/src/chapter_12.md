@@ -1,0 +1,1 @@
+../../exercises/12_footnote_reborrow/README.CN.md

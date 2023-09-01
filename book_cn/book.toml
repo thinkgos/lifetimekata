@@ -15,3 +15,6 @@ extra-watch-dirs = ["../exercises"]
 no-section-label = true
 site-url = "/lifetimekata/"
 git-repository-url = "https://github.com/thinkgos/lifetimekata"
+
+[output.html.playground]
+editable = true
