@@ -26,7 +26,7 @@ where
 }
 ```
 
-上述示例是无法编译通过的, 这里的`'a`限定是在调用该函数就已经定下来了, `'a`的生命周期一般都要比函数要长,
+上述示例是无法编译通过的, 这里的`'a`约束是在调用该函数就已经定下来了, `'a`的生命周期一般都要比函数要长,
 但是我们的`zero`是在函数里的, `Rust`提出了`HRTB`, 我们可以改成如下
 
 ```rust,editable
@@ -60,8 +60,8 @@ fn main() {
 `fn f<'a>() {}`属于`late bound`的一种情况, 只有在调用`f`时才会决定`'a`的生命周期.
 `fn g<'a: 'a>() {}`是`early bound`的一种情况, 在传递时就要确定`'a`. 在`where`语句,`impl`的`self`都属于`early bound`.
 
-`early bound`: 在传递时就确定了限定
-`late bound`: 在调用时才确定限定
+`early bound`: 在传递时就确定了约束
+`late bound`: 在调用时才确定约束
 
 ## generic associated types
 

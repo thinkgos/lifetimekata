@@ -47,7 +47,7 @@ fn f2<T: Foo>(t: T) -> Box<dyn Foo + 'static> {
 对于`T`不仅有可能是所有权类型, 也有可能是不可变引用或可变引用, 这些引用传进来时, 就包含自己的生命周期.
 生命周期不匹配, 所以编译不能通过.
 
-我们相以增加`'_`让`trait`使用通用的生命周期省略规则, 或限定`T`为`'static`.
+我们相以增加`'_`让`trait`使用通用的生命周期省略规则, 或约束`T`为`'static`.
 
 ```rust
 trait Foo {}
@@ -114,7 +114,7 @@ fn f4(s: &str) -> Box<dyn Foo + 'static> {
 }
 ```
 
-我们相以增加`'_`让`trait`使用通用的生命周期省略规则, 或限定`&str`为`&'static str`.
+我们相以增加`'_`让`trait`使用通用的生命周期省略规则, 或约束`&str`为`&'static str`.
 即使
 `fn f4(s: &str) -> Box<dyn Foo + '_>`或`fn f4(s: &static str) -> Box<dyn Foo + 'static>`.
 

@@ -133,6 +133,6 @@ error: could not compile __ due to previous error
 
 尽管生命周期推断意味着`get_bool`应该最终具有这样的签名：`fn get_bool<'elided>(b: &'elided bool) -> Box<dyn Bool + 'elided>`,
 但实际情况并非如此.由于`trait`对象的特殊规则, 生命周期实际上是这样的：`fn get_bool<'elided>(b: &'elided bool) -> Box<dyn Bool + 'static>`.
-这个`'static`限定是不正确的.
+这个`'static`约束是不正确的.
 
-因此, 我们需要`'_`限定(正如这个错误消息所告诉我们的那样)来告诉`Rust`它应该使用通用的生命周期推断规则, 而不是特殊的`trait`对象规则.
+因此, 我们需要`'_`约束(正如这个错误消息所告诉我们的那样)来告诉`Rust`它应该使用通用的生命周期推断规则, 而不是特殊的`trait`对象规则.

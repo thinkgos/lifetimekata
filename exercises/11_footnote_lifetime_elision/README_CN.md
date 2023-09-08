@@ -1,22 +1,21 @@
 # 附注: 译rust reference生命周期的省略规则
 
-详见原文[rust reference]
+详见原文[rust reference],中文翻译[rust reference cn]
 
-`Rust`在许多情况下允许省略生命周期, 编译器可以推断出合理的默认选择.
+`Rust`在许多情况下允许省略多个位置的生命周期, 但前提是编译器可以推断出合理的默认选择.
 
 ## 函数上生命周期省略规则
 
-为了使常见的模式更加符合人体工程学, 在[function item]、[function pointer]和[closure trait]的签名中可以省略生命周期参数.
-以下规则用于推断省略的生命周期参数. 无法推断出省略的生命周期参数将导致错误. 占位符(匿名)生命周期`'_`也可以用于以相同的方式推断生命周期.
-对于路径中的生命周期, 使用`'_`是首选的.
-`trait`对象的生命周期遵循不同的规则, 将在[下面](#默认`trait`对象生命周期)进行讨论.
+为了使常用模式更加符合人体工程学, 在[function item]、[function pointer]和[closure trait]的签名中可以省略生命周期参数.
+以下规则用于推断出被省略的生命周期参数. 无法推断出省略的生命周期参数将导致错误. 占位符(匿名)生命周期`'_`也可以用于以相同的方式推断生命周期.
+对于路径中的生命周期, 首选使用`'_`. `trait`对象的生命周期遵循不同的规则, 将在[这里](#默认`trait`对象生命周期)进行讨论.
 
-- 每个没有提供输入生命周期的参数都将分配其各自独立的生命周期
-- 如果所有输入引用上有且只有一个生命周期, 那么那个生命周期就会被赋予*每个*输出.
+- 参数中省略的每个生命周期类型参数都会(被推断)有各自独立的生命周期类型。
+- 如果所有输入引用上有且只有一个生命周期, 则将该生命周期作为*所有*省略的输出生命周期的类型参数.
 
 在方法签名中, 还有另一个规则:
 
-- 如果接收者具有类型 `&Self` 或 `&mut Self`，则借用的`self`的生命周期将分配给所有省略生命周期的输出.
+- 如果接收者具有类型 `&Self` 或 `&mut Self`，则借用的`self`的生命周期作为所有省略输出生命周期的的类型参数.
 
 例:
 
@@ -70,22 +69,21 @@ fn frob(s: &str, t: &str) -> &str;                    // ILLEGAL
 
 ## 默认`trait`对象生命周期
 
-[trait object]所持有引用的假定的生命周期称为其默认对象生命周期限定.
-它们定义在[RFC 599]和修订的[RFC 1156].
+[trait object]所持有引用的假定的生命周期称为其默认对象生命周期约束. 它们定义在[RFC 599]和修订的[RFC 1156].
 
-这些默认的对象生命周期限定是在完全省略生命周期的参数时使用的, 而不是根据上面定义的生命周期通用的省略规则.
-但是如果使用`'_`作为生命周期限定, 那么将遵循上面通用的省略规则
+这些默认的对象生命周期约束是在完全省略生命周期的参数时使用的, 而不是根据上面定义的生命周期通用的省略规则.
+但是如果使用`'_`作为生命周期约束, 那么将遵循上面通用的省略规则
 
-如果将`trait`对象用作泛型的类型参数, 则首先使用其包含类型来推断限定.
+如果将`trait`对象用作泛型的类型参数, 则首先使用其包含类型来推断约束.
 
-- 如果包含的类型有唯一的限定, 那么该限定就是默认的限定.
-- 如果包含的类型有多个限定, 那么必须指定一个显式的限定.
+- 如果包含的类型有唯一的约束, 那么该约束就是默认的约束.
+- 如果包含的类型有多个约束, 那么必须指定一个显式的约束.
 
-如果以上规则都不适用, 那么将使用`trait`的生命周期限定：
+如果以上规则都不适用, 那么将使用`trait`的生命周期约束：
 
-- 如果`trait`使用单一生命周期`_bound_`进行定义, 则使用该限定.
-- 如果在任何生命周期限定中使用了`'static`, 则使用`'static`.
-- 如果`trait`没有生命周期限定, 则在表达式中推断生命周期, 并在表达式外部使用`'static`.
+- 如果`trait`使用单一生命周期`_bound_`进行定义, 则使用该约束.
+- 如果在任何生命周期约束中使用了`'static`, 则使用`'static`.
+- 如果`trait`没有生命周期约束, 则在表达式中推断生命周期, 并在表达式外部使用`'static`.
 
 ```rust
 // For the following trait...
@@ -121,7 +119,7 @@ type T7<'a, 'b> = TwoBounds<'a, 'b, dyn Foo>;
 // Error: the lifetime bound for this object type cannot be deduced from context
 ```
 
-请注意, 最内层的对象确定了生命周期限定, 因此`&'a Box<dyn Foo>`仍然等同于`&'a Box<dyn Foo + 'static>`.
+请注意, 最内层的对象确定了生命周期约束, 因此`&'a Box<dyn Foo>`仍然等同于`&'a Box<dyn Foo + 'static>`.
 
 ```rust
 // For the following trait...
@@ -193,6 +191,7 @@ const RESOLVED_STATIC: &dyn Fn(&Foo, &Bar) -> &Baz = &somefunc;
 ```
 
 [rust reference]: https://doc.rust-lang.org/reference/lifetime-elision.html
+[rust reference cn]: https://rustwiki.org/zh-CN/reference/lifetime-elision.html
 [function item]: https://doc.rust-lang.org/reference/types/function-item.html
 [function pointer]: https://doc.rust-lang.org/reference/types/function-pointer.html
 [closure trait]: https://doc.rust-lang.org/reference/types/closure.html
