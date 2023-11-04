@@ -1,11 +1,11 @@
 # 附注: reborrow
 
-对于每个类型`T`, 有两种类型的引用:
+对于每个类型`T`, 有两种类型的引用[Primitive Type reference](https://doc.rust-lang.org/std/primitive.reference.html):
 
 - `&T`: `T`的共享引用(通常称为共享借用). 您可以拥有任意数量的共享引用, 但它们不允许您修改它们引用的数据.
 - `&mut T`: `T`的可变引用(通常称为独占借用). 您同时只能拥有一个可变引用, 但它们允许您修改它们引用的数据.
 
-而`&T`实现了`Copy`, `&mut T`没有实现`Copy`
+而`&T`实现了`Copy`, `&mut T`没有实现`Copy`.
 
 `Rust`对`reborrow`还没有更好的文档, 更多详情参阅:
 

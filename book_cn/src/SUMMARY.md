@@ -16,3 +16,8 @@
 - [章节12: 附注: `reborrow`](./chapter_12.md)
 - [章节13: 附注: `impl trait`的生命周期](./chapter_13.md)
 - [章节14: 附注: HRTB & GAT](./chapter_14.md)
+- [章节15: 附注: 统一访问借用和重借用](./chapter_15.md)
+- [章节16: 附注: 译`RFC 599`默认对象生命周期约束](./chapter_16.md)
+- [章节17: 附注: 译`RFC 1156`调整默认对象生命周期约束](./chapter_17.md)
+- [章节18: 附注: 译`RFC 1951`扩展impl trait](./chapter_18.md)
+- [章节19: 附注: 译`RFC 2394`async await](./chapter_19.md)
