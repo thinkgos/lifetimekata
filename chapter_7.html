@@ -1,0 +1,342 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>章节7: 特殊的生命周期 - LifetimeKata</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html">前言</a></li><li class="chapter-item expanded "><a href="chapter_0.html">章节0: 回顾</a></li><li class="chapter-item expanded "><a href="chapter_1.html">章节1: 生命周期的必要性</a></li><li class="chapter-item expanded "><a href="chapter_2.html">章节2: 生命周期的解释</a></li><li class="chapter-item expanded "><a href="chapter_3.html">章节3: 生命周期的省略规则</a></li><li class="chapter-item expanded "><a href="chapter_4.html">章节4: 可变引用和容器</a></li><li class="chapter-item expanded "><a href="chapter_5.html">章节5: 类型上的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_6.html">章节6: impl上的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_7.html" class="active">章节7: 特殊的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_8.html">章节8: 终章</a></li><li class="chapter-item expanded "><a href="chapter_9.html">章节9: 延伸阅读</a></li><li class="chapter-item expanded "><a href="chapter_10.html">章节10: 附注: trait生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_11.html">章节11: 附注: 译rust reference生命周期的省略规则</a></li><li class="chapter-item expanded "><a href="chapter_12.html">章节12: 附注: reborrow</a></li><li class="chapter-item expanded "><a href="chapter_13.html">章节13: 附注: impl trait的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_14.html">章节14: 附注: HRTB & GAT</a></li><li class="chapter-item expanded "><a href="chapter_15.html">章节15: 附注: 统一访问借用和重借用</a></li><li class="chapter-item expanded "><a href="chapter_16.html">章节16: 附注: 译RFC 599默认对象生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_17.html">章节17: 附注: 译RFC 1156调整默认对象生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_18.html">章节18: 附注: 译RFC 1951扩展impl trait</a></li><li class="chapter-item expanded "><a href="chapter_19.html">章节19: 附注: 译RFC 2394async await</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">LifetimeKata</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/thinkgos/lifetimekata" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="特殊生命周期和约束"><a class="header" href="#特殊生命周期和约束">特殊生命周期和约束</a></h1>
+<p>在<code>Rust</code>中有两个特殊的生命周期, 值得讨论它们:</p>
+<ul>
+<li><code>'static</code></li>
+<li><code>'_</code> (隐式生命周期)</li>
+</ul>
+<h2 id="static的生命周期"><a class="header" href="#static的生命周期"><code>static</code>的生命周期</a></h2>
+<p><code>&amp;'static T</code>代表能在整个程序运行期间存活.</p>
+<p>你的程序中有一些内容是在整个程序运行期间存活. 其中最常见的情况是当它们作为信息捆绑在你的二进制文件中. 例如, 当你编写像这样的程序时:</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let my_text = "Hello World";
+}</code></pre></pre>
+<p>文本<code>"Hello World"</code>实际上位于编译后的二进制文件中某个位置. 这意味着只要程序在运行, 对它的引用始终是有效的, 因为该文本始终存在于其中.
+因此, 如果我们要谈论这种类型的文本, 我们会说它是<code>&amp;'static str</code>.</p>
+<p>类似地, 对于常量的任何引用也可以是<code>&amp;'static</code>. 例如:</p>
+<pre><pre class="playground"><code class="language-rust">const SOME_COORDINATE: (i32, i32) = (7, 4);
+
+fn main() {
+    let static_reference: &amp;'static (i32, i32) = &amp;SOME_COORDINATE;
+}</code></pre></pre>
+<h2 id="_生命周期匿名生命周期-占位符生命周期"><a class="header" href="#_生命周期匿名生命周期-占位符生命周期"><code>'_</code>生命周期(匿名生命周期, 占位符生命周期)</a></h2>
+<p>隐式生命周期在<code>Rust</code>中是指让编译器自行推断导生命周期. 这种生命周期推导在以下三种情况下非常有用:</p>
+<ul>
+<li>简化<code>impl</code>代码块</li>
+<li>输入/返回 一个需要生命周期的类型时(<code>Rust建议</code>)</li>
+<li>编写包含引用的<code>trait object</code>时</li>
+</ul>
+<h3 id="简化impl代码块"><a class="header" href="#简化impl代码块">简化<code>impl</code>代码块</a></h3>
+<p>你正在实现一个计数器结构, 其如下:</p>
+<pre><pre class="playground"><code class="language-rust">struct Counter&lt;'a&gt; {
+    counter: &amp;'a mut i32
+}
+
+impl&lt;'a&gt; Counter&lt;'a&gt; {
+    fn increment(&amp;mut self) {
+        *self.counter += 1;
+    }
+}
+
+fn main() {
+    let mut num = 0;
+    
+    let mut counter = Counter { counter: &amp;mut num };
+    counter.increment();
+    
+    println!("{num}"); // prints 1
+}</code></pre></pre>
+<p>当你仔细观察时会注意到, <code>impl</code>块实际上并没有在任何地方使用<code>'a</code>生命周期,
+因此, 我们可以通过以下方式简化代码:</p>
+<pre><code class="language-rust ignore">impl Counter&lt;'_&gt; {
+    fn increment(&amp;mut self) {
+        self.counter += 1;
+    }
+}</code></pre>
+<p>上面的两个 <code>impl</code> 块表示的意思是相同的, 只是参数稍微少一些.</p>
+<h3 id="返回结构体和枚举"><a class="header" href="#返回结构体和枚举">返回结构体和枚举</a></h3>
+<p>这是针对返回包含引用的结构体/枚举的情况的推荐做法, 你可以编写类似这样的代码:</p>
+<pre><pre class="playground"><code class="language-rust">
+struct StrWrap&lt;'a&gt;(&amp;'a str);
+
+fn make_wrapper(string: &amp;str) -&gt; StrWrap {
+    StrWrap(string)
+}
+
+<span class="boring">fn main() {}</span></code></pre></pre>
+<p>但是这种语法不再推荐使用, 当您添加<code>#![deny(rust_2018_idioms)]</code>注解时, 您将会看到以下错误:</p>
+<pre><code class="language-text">error: hidden lifetime parameters in types are deprecated
+ --&gt; src/main.rs:8:34
+  |
+_ | fn make_wrapper(string: &amp;str) -&gt; StrWrap {
+  |                                  ^^^^^^^ expected lifetime parameter
+  |
+note: the lint level is defined here
+ --&gt; src/main.rs:1:9
+  |
+_ | #![deny(rust_2018_idioms)]
+  |         ^^^^^^^^^^^^^^^^
+  = note: `#[deny(elided_lifetimes_in_paths)]` implied by `#[deny(rust_2018_idioms)]`
+help: indicate the anonymous lifetime
+  |
+_ | fn make_wrapper(string: &amp;str) -&gt; StrWrap&lt;'_&gt; {
+  |                                         ++++
+</code></pre>
+<p>根据这个提示, 可以更清楚地看出 <code>StrWrap</code> <em>确实</em>包含一个引用, 只是编译器自己解决了这个问题.</p>
+<h3 id="trait对象上的生命周期"><a class="header" href="#trait对象上的生命周期"><code>trait</code>对象上的生命周期</a></h3>
+<p>详见<a href="./chapter_10.html">章节10:生命周期限制的附注</a>以获取更多信息.</p>
+<h2 id="生命周期约束"><a class="header" href="#生命周期约束">生命周期约束</a></h2>
+<p>生命周期约束并不被广泛使用, 因此我们在这些练习中没有为其专门划分大节.
+如果你不是非常想了解细节, 可以跳过这一部分.
+简单来说, 它们允许您指定一个生命周期应该比另一个生命周期更长. 要指定一个生命周期, 可以使用类似于 <code>where 'a: 'b</code> 这样的<code>where</code>子句.</p>
+<p>引用<code>Rust</code>参考文档的说法:</p>
+<blockquote>
+<p>生命周期约束可以应用于类型或其他生命周期.
+<code>'a: 'b</code>约束通常被理解为<code>'a</code>比<code>'b</code>活的更长.
+<code>'a: 'b</code> 的意思是<code>'a</code>至少和<code>'b</code>活的一样长, 因此引用<code>&amp;'a ()</code>在与 <code>&amp;'b ()</code> 相同情况下有效.</p>
+<pre><code class="language-rust ignore">fn f&lt;'a, 'b&gt;(x: &amp;'a i32, mut y: &amp;'b i32) where 'a: 'b {
+    y = x;                      // &amp;'a i32 is a subtype of &amp;'b i32 because 'a: 'b
+    let r: &amp;'b &amp;'a i32 = &amp;&amp;0;   // &amp;'b &amp;'a i32 is well formed because 'a: 'b
+}</code></pre>
+<p><code>T: 'a</code> 的意思是<code>T</code>的所有生命周期参数都要比<code>'a</code>活的长.
+举例来说, 如果<code>'a</code>是一个无约束的生命周期参数, 那么 <code>i32: 'static</code> 和 <code>&amp;'static str: 'a</code> 这两个条件是满足的, 但是 <code>Vec&lt;&amp;'a ()&gt;: 'static</code> 则不满足.</p>
+</blockquote>
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<p>你已经获得代码, 其中包含许多 <code>'a</code> 和 <code>'b</code> 生命周期的用法. 所有这些生命周期可以被替换为 <code>'_</code> 或 <code>'static</code>.
+你的任务是将所有的<code>'a</code>和<code>'b</code>生命周期出现替换为<code>'_</code>或<code>'static</code>, 以消除过多的生命周期声明, 并确保你的代码仍然能够编译通过.</p>
+<h2 id="已过时信息的附注"><a class="header" href="#已过时信息的附注">已过时信息的附注</a></h2>
+<p><code>Rust</code>版本指南曾经包含关于匿名生命周期的部分内容. 现在最受欢迎的谷歌搜索结果是<a href="https://yegeun542.github.io/rust-edition-guide-ko/rust-2018/ownership-and-lifetimes/the-anonymous-lifetime.html">这篇文章</a>, 但我建议忽略它, 因为这是过时的信息.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="chapter_6.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="chapter_8.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="chapter_6.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="chapter_8.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

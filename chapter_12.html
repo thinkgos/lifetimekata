@@ -1,0 +1,393 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>章节12: 附注: reborrow - LifetimeKata</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html">前言</a></li><li class="chapter-item expanded "><a href="chapter_0.html">章节0: 回顾</a></li><li class="chapter-item expanded "><a href="chapter_1.html">章节1: 生命周期的必要性</a></li><li class="chapter-item expanded "><a href="chapter_2.html">章节2: 生命周期的解释</a></li><li class="chapter-item expanded "><a href="chapter_3.html">章节3: 生命周期的省略规则</a></li><li class="chapter-item expanded "><a href="chapter_4.html">章节4: 可变引用和容器</a></li><li class="chapter-item expanded "><a href="chapter_5.html">章节5: 类型上的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_6.html">章节6: impl上的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_7.html">章节7: 特殊的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_8.html">章节8: 终章</a></li><li class="chapter-item expanded "><a href="chapter_9.html">章节9: 延伸阅读</a></li><li class="chapter-item expanded "><a href="chapter_10.html">章节10: 附注: trait生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_11.html">章节11: 附注: 译rust reference生命周期的省略规则</a></li><li class="chapter-item expanded "><a href="chapter_12.html" class="active">章节12: 附注: reborrow</a></li><li class="chapter-item expanded "><a href="chapter_13.html">章节13: 附注: impl trait的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_14.html">章节14: 附注: HRTB & GAT</a></li><li class="chapter-item expanded "><a href="chapter_15.html">章节15: 附注: 统一访问借用和重借用</a></li><li class="chapter-item expanded "><a href="chapter_16.html">章节16: 附注: 译RFC 599默认对象生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_17.html">章节17: 附注: 译RFC 1156调整默认对象生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_18.html">章节18: 附注: 译RFC 1951扩展impl trait</a></li><li class="chapter-item expanded "><a href="chapter_19.html">章节19: 附注: 译RFC 2394async await</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">LifetimeKata</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/thinkgos/lifetimekata" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="附注-reborrow"><a class="header" href="#附注-reborrow">附注: reborrow</a></h1>
+<p>对于每个类型<code>T</code>, 有两种类型的引用<a href="https://doc.rust-lang.org/std/primitive.reference.html">Primitive Type reference</a>:</p>
+<ul>
+<li><code>&amp;T</code>: <code>T</code>的共享引用(通常称为共享借用). 您可以拥有任意数量的共享引用, 但它们不允许您修改它们引用的数据.</li>
+<li><code>&amp;mut T</code>: <code>T</code>的可变引用(通常称为独占借用). 您同时只能拥有一个可变引用, 但它们允许您修改它们引用的数据.</li>
+</ul>
+<p>而<code>&amp;T</code>实现了<code>Copy</code>, <code>&amp;mut T</code>没有实现<code>Copy</code>.</p>
+<p><code>Rust</code>对<code>reborrow</code>还没有更好的文档, 更多详情参阅:</p>
+<ul>
+<li><a href="https://github.com/rust-lang/reference/issues/788">reborrow issue</a></li>
+<li><a href="https://users.rust-lang.org/t/unifying-borrow-and-reborrow-conceptually-via-access/66065">Unifying borrow and reborrow via access</a></li>
+</ul>
+<h2 id="练习1-reborrow"><a class="header" href="#练习1-reborrow">练习1: reborrow</a></h2>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {
+    let mut i = 42;
+    let x = &amp;mut i;
+    // move and reborrow
+    // let y = x; // value moved here, will cause error
+    let y: &amp;mut i32 = x; // reborrow, same as let y: &amp;mut i32 = &amp;mut *x;
+    *y = 44;
+    println!("y = {}", *y);
+    *x = 45;
+    println!("x = {}", *x);
+}</code></pre></pre>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let mut i = 42;
+    let x = &amp;mut i;
+    // reborrow, not moved, same as change_i(&amp;mut *x);
+    change_i(x);
+    println!("i = {}",*x);
+    *x = 45;
+    println!("i = {}",*x);
+}
+fn change_i(i: &amp;mut i32) {
+    *i = 44;
+}</code></pre></pre>
+<h2 id="练习-引用的引用-来自cheats-memory-lifetimes"><a class="header" href="#练习-引用的引用-来自cheats-memory-lifetimes">练习: 引用的引用, 来自<a href="https://cheats.rs/#memory-lifetimes">cheats: memory lifetimes</a></a></h2>
+<p><strong>NOTE: 对<code>&amp;'b &amp;'a S</code>, 可以把<code>&amp;'a S</code>看成<code>T</code>(<code>&amp;'a S = T</code>), 则有<code>&amp;'b T</code>且有<code>T: 'b</code>约束, 则推理得出<code>'a: 'b</code>.</strong>
+<strong>NOTE: <code>'a: 'b</code>约束表明<code>'a</code>生命周期比<code>'b</code>要长.</strong></p>
+<h3 id="分析下面返回一个短生命周期b的不可变引用"><a class="header" href="#分析下面返回一个短生命周期b的不可变引用">分析下面返回一个短生命周期(<code>'b</code>)的不可变引用</a></h3>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {}
+
+// Return short('b') reference
+
+struct S;
+
+fn f1&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a S) -&gt; &amp;'b S {
+    *rb
+}
+
+fn f2&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a mut S) -&gt; &amp;'b S {
+    *rb
+}
+
+fn f3&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a S) -&gt; &amp;'b S {
+    *rb
+}
+
+fn f4&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a mut S) -&gt; &amp;'b S {
+    *rb
+}</code></pre></pre>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f1</code>, <code>&amp;'b &amp;'a S</code>有<code>'a: 'b</code>约束, <code>*rb</code>是从<code>&amp;'b &amp;'a S</code>解引用得到<code>&amp;'c S</code>则有<code>'c: 'b</code>约束, 但是因为<code>&amp;T</code>是可<code>Copy</code>的, 返回不可变引用是没有问题的, 可以编译通过.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f2</code>, <code>&amp;'b &amp;'a mut S</code>有<code>'a: 'b</code>约束, <code>*rb</code>是从<code>&amp;'b &amp;'a mut S</code>解引用得到<code>&amp;'c mut S</code>则有<code>'c: 'b</code>约束, 因为<code>'c: 'b</code>, 返回值的生命周期是符合条件的, 所以一个可变的引用转成不可变引用是可以, 所以这里是能编译通过的.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f3</code>, 和<code>f1</code>不同的是<code>*rb</code>从<code>&amp;'b mut &amp;'a S</code>解引用得到<code>&amp;'c S</code>(涉及到<code>reborrow</code>), 因为<code>&amp;T</code>是可<code>Copy</code>的, 所以这里是能编译通过的.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f4</code>, 和<code>f2</code>不同的是<code>*rb</code>从<code>&amp;'b mut &amp;'a mut S</code>解引用得到<code>&amp;'c mut S</code>(涉及到<code>reborrow</code>), 生命周期也符合条件, 所以这里是能编译通过的.</li>
+</ul>
+<h3 id="分析下面返回一个短生命周期b的可变引用"><a class="header" href="#分析下面返回一个短生命周期b的可变引用">分析下面返回一个短生命周期(<code>'b</code>)的可变引用</a></h3>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {}
+
+// Return short('b') mutable reference
+
+struct S;
+
+
+fn f1&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a S) -&gt; &amp;'b mut S {
+    *rb
+}
+
+fn f2&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a mut S) -&gt; &amp;'b mut S {
+    *rb
+}
+
+fn f3&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a S) -&gt; &amp;'b mut S {
+    *rb
+}
+
+fn f4&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a mut S) -&gt; &amp;'b S {
+    *rb
+}</code></pre></pre>
+<ul>
+<li>看下<code>f1</code>, 不可变引用是不能转为可变引用, 所以编译不通过.</li>
+<li>看下<code>f2</code>, 同<code>f1</code>, 因为<code>rb</code>是不可变引用不能将<code>*rb</code>解引用成可变引用, 所以编译不通过.</li>
+<li>看下<code>f3</code>, 同<code>f1</code>, 因为<code>rb</code>是可变引用,<code>*rb</code>解引用成不可变引用, 再从不可变引用转换成可变引用是不合法的, 所以编译不通过</li>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f4</code>, 可变引用的可变引用, 返回一个可变引用, 这是合法的, 现在就看生命周期是否符合要求, 生命周期推理可以看上一题<code>f1</code>的推理, <code>f4</code>是可以编译通过的</li>
+</ul>
+<h3 id="分析下面返回一个长生命周期a的不可变引用"><a class="header" href="#分析下面返回一个长生命周期a的不可变引用">分析下面返回一个长生命周期(<code>'a</code>)的不可变引用</a></h3>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {}
+
+// Return long('a') reference
+
+struct S;
+
+fn f1&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a S) -&gt; &amp;'a S {
+    *rb
+}
+
+fn f2&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a mut S) -&gt; &amp;'a S {
+    *rb
+}
+
+fn f3&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a S) -&gt; &amp;'a S {
+    *rb
+}
+
+fn f4&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a mut S) -&gt; &amp;'a S {
+    *rb
+}</code></pre></pre>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f1</code>, <code>&amp;'b &amp;'a S</code>有<code>'a: 'b</code>约束, <code>*rb</code>是从<code>&amp;'b &amp;'a S</code>解引用得到<code>&amp;'c S</code>则有<code>'c: 'b</code>约束, 但是因为<code>&amp;T</code>是可<code>Copy</code>的, 返回不可变引用是没有问题的.</li>
+<li>看下<code>f2</code>, <code>&amp;'b &amp;'a mut S</code>有<code>'a: 'b</code>,<code>*rb</code>解引用得到<code>&amp;'c mut S</code>则有<code>'c: 'b</code>约束, 由于<code>&amp;mut T</code>是<strong>没有实现</strong><code>copy</code>的,且<code>'a</code>和<code>'c</code>无法确定关系, 所有<code>&amp;'c mut S</code> 是无法转换成<code>&amp;'a S</code>.</li>
+<li>看下<code>f3</code>, <code>&amp;'b mut &amp;'a S</code>有<code>'a: 'b</code>,<code>*rb</code>解引用得到<code>&amp;'c S</code>则有<code>'c: 'b</code>约束, 由于<code>&amp;T</code>是<strong>实现</strong><code>copy</code>的, 所以 <code>&amp;'c S</code> 转成<code>&amp;'a S</code>是没有问题的.</li>
+<li>看下<code>f4</code>, <code>&amp;'b mut &amp;'a mut S</code>有<code>'a: 'b</code>,<code>*rb</code>解引用得到<code>&amp;'c mut S</code>则有<code>'c: 'b</code>约束,由于<code>&amp;mut T</code>是<strong>没有实现</strong><code>copy</code>的, 且<code>'a</code>和<code>'c</code>无法确定关系, 所有<code>&amp;'c mut S</code> 是无法转换成<code>&amp;'a mut S</code>.</li>
+</ul>
+<h3 id="分析下面返回一个长生命周期a的可变引用"><a class="header" href="#分析下面返回一个长生命周期a的可变引用">分析下面返回一个长生命周期(<code>'a</code>)的可变引用</a></h3>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {}
+
+// Return long('a') mutable reference
+
+struct S;
+
+fn f1&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a S) -&gt; &amp;'a mut S {
+    *rb
+}
+
+fn f2&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a mut S) -&gt; &amp;'a mut S {
+    *rb
+}
+
+fn f3&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a S) -&gt; &amp;'a mut S {
+    *rb
+}
+
+fn f4&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a mut S) -&gt; &amp;'a mut S {
+    *rb
+}</code></pre></pre>
+<ul>
+<li>看下<code>f1</code>, 不可变引用是不能转为可变引用, 所以编译不通过.</li>
+<li>看下<code>f2</code>, 同<code>f1</code>, 因为<code>rb</code>是不可变引用不能将<code>*rb</code>解引用成可变引用, 所以编译不通过.</li>
+<li>看下<code>f3</code>, 同<code>f1</code>, 因为<code>rb</code>是可变引用,<code>*rb</code>解引用成不可变引用, 再从不可变引用转换成可变引用是不合法的, 所以编译不通过</li>
+<li>看下<code>f4</code>, <code>&amp;'b mut &amp;'a mut S</code>有<code>'a: 'b</code>,<code>*rb</code>解引用得到<code>&amp;'c mut S</code>则有<code>'c: 'b</code>约束, 因为<code>'a</code>和<code>'c</code>无法确定关系, <code>&amp;'c mut S</code>是无法转换成<code>&amp;'a mut S</code>, 所以编译不通过</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="chapter_11.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="chapter_13.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="chapter_11.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="chapter_13.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

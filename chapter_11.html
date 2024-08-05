@@ -1,0 +1,407 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>章节11: 附注: 译rust reference生命周期的省略规则 - LifetimeKata</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html">前言</a></li><li class="chapter-item expanded "><a href="chapter_0.html">章节0: 回顾</a></li><li class="chapter-item expanded "><a href="chapter_1.html">章节1: 生命周期的必要性</a></li><li class="chapter-item expanded "><a href="chapter_2.html">章节2: 生命周期的解释</a></li><li class="chapter-item expanded "><a href="chapter_3.html">章节3: 生命周期的省略规则</a></li><li class="chapter-item expanded "><a href="chapter_4.html">章节4: 可变引用和容器</a></li><li class="chapter-item expanded "><a href="chapter_5.html">章节5: 类型上的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_6.html">章节6: impl上的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_7.html">章节7: 特殊的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_8.html">章节8: 终章</a></li><li class="chapter-item expanded "><a href="chapter_9.html">章节9: 延伸阅读</a></li><li class="chapter-item expanded "><a href="chapter_10.html">章节10: 附注: trait生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_11.html" class="active">章节11: 附注: 译rust reference生命周期的省略规则</a></li><li class="chapter-item expanded "><a href="chapter_12.html">章节12: 附注: reborrow</a></li><li class="chapter-item expanded "><a href="chapter_13.html">章节13: 附注: impl trait的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_14.html">章节14: 附注: HRTB & GAT</a></li><li class="chapter-item expanded "><a href="chapter_15.html">章节15: 附注: 统一访问借用和重借用</a></li><li class="chapter-item expanded "><a href="chapter_16.html">章节16: 附注: 译RFC 599默认对象生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_17.html">章节17: 附注: 译RFC 1156调整默认对象生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_18.html">章节18: 附注: 译RFC 1951扩展impl trait</a></li><li class="chapter-item expanded "><a href="chapter_19.html">章节19: 附注: 译RFC 2394async await</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">LifetimeKata</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/thinkgos/lifetimekata" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="附注-译rust-reference生命周期的省略规则"><a class="header" href="#附注-译rust-reference生命周期的省略规则">附注: 译rust reference生命周期的省略规则</a></h1>
+<p>原文: <a href="https://doc.rust-lang.org/reference/lifetime-elision.html">rust reference</a><br />
+中文: <a href="https://rustwiki.org/zh-CN/reference/lifetime-elision.html">rust reference cn</a></p>
+<p><code>Rust</code>在许多情况下允许省略多个位置的生命周期, 但前提是编译器可以推断出合理的默认选择.</p>
+<h2 id="函数上生命周期省略规则"><a class="header" href="#函数上生命周期省略规则">函数上生命周期省略规则</a></h2>
+<p>为了使常用模式更加符合人体工程学, 在<a href="https://doc.rust-lang.org/reference/types/function-item.html">function item</a>、<a href="https://doc.rust-lang.org/reference/types/function-pointer.html">function pointer</a>和<a href="https://doc.rust-lang.org/reference/types/closure.html">closure trait</a>的签名中可以省略生命周期参数.
+以下规则用于推断出被省略的生命周期参数. 无法推断出省略的生命周期参数将导致错误. 占位符(匿名)生命周期<code>'_</code>也可以用于以相同的方式推断生命周期.
+对于路径中的生命周期, 首选使用<code>'_</code>. <code>trait</code>对象的生命周期遵循不同的规则, 将在<a href="#%E9%BB%98%E8%AE%A4%60trait%60%E5%AF%B9%E8%B1%A1%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F">默认<code>trait</code>对象生命周期</a>进行讨论.</p>
+<ul>
+<li>参数中省略的每个生命周期类型参数都会(被推断)有各自独立的生命周期类型。</li>
+<li>如果所有输入引用上有且只有一个生命周期, 则将该生命周期作为<em>所有</em>省略的输出生命周期的类型参数.</li>
+</ul>
+<p>在方法签名中, 还有另一个规则:</p>
+<ul>
+<li>如果接收者具有类型<code>&amp;Self</code>或<code>&amp;mut Self</code>，则借用的<code>self</code>的生命周期作为所有省略输出生命周期的的类型参数.</li>
+</ul>
+<p>例:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait T {}
+</span><span class="boring">trait ToCStr {}
+</span><span class="boring">struct Thing&lt;'a&gt; {f: &amp;'a i32}
+</span><span class="boring">struct Command;
+</span><span class="boring">
+</span><span class="boring">trait Example {
+</span>fn print1(s: &amp;str);                                   // elided
+fn print2(s: &amp;'_ str);                                // also elided
+fn print3&lt;'a&gt;(s: &amp;'a str);                            // expanded
+
+fn debug1(lvl: usize, s: &amp;str);                       // elided
+fn debug2&lt;'a&gt;(lvl: usize, s: &amp;'a str);                // expanded
+
+fn substr1(s: &amp;str, until: usize) -&gt; &amp;str;            // elided
+fn substr2&lt;'a&gt;(s: &amp;'a str, until: usize) -&gt; &amp;'a str;  // expanded
+
+fn get_mut1(&amp;mut self) -&gt; &amp;mut dyn T;                 // elided
+fn get_mut2&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut dyn T;       // expanded
+
+fn args1&lt;T: ToCStr&gt;(&amp;mut self, args: &amp;[T]) -&gt; &amp;mut Command;                  // elided
+fn args2&lt;'a, 'b, T: ToCStr&gt;(&amp;'a mut self, args: &amp;'b [T]) -&gt; &amp;'a mut Command; // expanded
+
+fn new1(buf: &amp;mut [u8]) -&gt; Thing&lt;'_&gt;;                 // elided - preferred
+fn new2(buf: &amp;mut [u8]) -&gt; Thing;                     // elided
+fn new3&lt;'a&gt;(buf: &amp;'a mut [u8]) -&gt; Thing&lt;'a&gt;;          // expanded
+<span class="boring">}
+</span>
+type FunPtr1 = fn(&amp;str) -&gt; &amp;str;                      // elided
+type FunPtr2 = for&lt;'a&gt; fn(&amp;'a str) -&gt; &amp;'a str;        // expanded
+
+type FunTrait1 = dyn Fn(&amp;str) -&gt; &amp;str;                // elided
+type FunTrait2 = dyn for&lt;'a&gt; Fn(&amp;'a str) -&gt; &amp;'a str;  // expanded
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// The following examples show situations where it is not allowed to elide the
+// lifetime parameter.
+
+<span class="boring">trait Example {
+</span>// Cannot infer, because there are no parameters to infer from.
+fn get_str() -&gt; &amp;str;                                 // ILLEGAL
+
+// Cannot infer, ambiguous if it is borrowed from the first or second parameter.
+fn frob(s: &amp;str, t: &amp;str) -&gt; &amp;str;                    // ILLEGAL
+<span class="boring">}
+</span><span class="boring">}</span></code></pre></pre>
+<h2 id="默认trait对象生命周期"><a class="header" href="#默认trait对象生命周期">默认<code>trait</code>对象生命周期</a></h2>
+<p><a href="https://doc.rust-lang.org/reference/types/trait-object.html">trait object</a>所持有引用的假定的生命周期称为其默认对象生命周期约束. 它们定义在<a href="https://github.com/rust-lang/rfcs/blob/master/text/0599-default-object-bound.md">RFC 599</a>和修订的<a href="https://github.com/rust-lang/rfcs/blob/master/text/1156-adjust-default-object-bounds.md">RFC 1156</a>.</p>
+<p>这些默认的对象生命周期约束是在完全省略生命周期的参数时使用的, 而不是根据上面定义的生命周期通用的省略规则.
+但是如果使用<code>'_</code>作为生命周期约束, 那么将遵循上面通用的省略规则</p>
+<p>如果将<code>trait</code>对象用作泛型的类型参数, 则首先使用其包含类型来推断约束.</p>
+<ul>
+<li>如果包含的类型有唯一的约束, 那么该约束就是默认的约束.</li>
+<li>如果包含的类型有多个约束, 那么必须指定一个显式的约束.</li>
+</ul>
+<p>如果以上规则都不适用, 那么将使用<code>trait</code>的生命周期约束：</p>
+<ul>
+<li>如果<code>trait</code>使用单一生命周期<code>_bound_</code>进行定义, 则使用该约束.</li>
+<li>如果在任何生命周期约束中使用了<code>'static</code>, 则使用<code>'static</code>.</li>
+<li>如果<code>trait</code>没有生命周期约束, 则在表达式中推断生命周期, 并在表达式外部使用<code>'static</code>.</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// For the following trait...
+trait Foo { }
+
+// These two are the same because Box&lt;T&gt; has no lifetime bound on T
+type T1 = Box&lt;dyn Foo&gt;;
+type T2 = Box&lt;dyn Foo + 'static&gt;;
+
+// ...and so are these:
+impl dyn Foo {}
+impl dyn Foo + 'static {}
+
+// ...so are these, because &amp;'a T requires T: 'a
+type T3&lt;'a&gt; = &amp;'a dyn Foo;
+type T4&lt;'a&gt; = &amp;'a (dyn Foo + 'a);
+
+// std::cell::Ref&lt;'a, T&gt; also requires T: 'a, so these are the same
+type T5&lt;'a&gt; = std::cell::Ref&lt;'a, dyn Foo&gt;;
+type T6&lt;'a&gt; = std::cell::Ref&lt;'a, dyn Foo + 'a&gt;;
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// This is an example of an error.
+<span class="boring">trait Foo { }
+</span>struct TwoBounds&lt;'a, 'b, T: ?Sized + 'a + 'b&gt; {
+    f1: &amp;'a i32,
+    f2: &amp;'b i32,
+    f3: T,
+}
+type T7&lt;'a, 'b&gt; = TwoBounds&lt;'a, 'b, dyn Foo&gt;;
+//                                  ^^^^^^^
+// Error: the lifetime bound for this object type cannot be deduced from context
+<span class="boring">}</span></code></pre></pre>
+<p>请注意, 最内层的对象确定了生命周期约束, 因此<code>&amp;'a Box&lt;dyn Foo&gt;</code>仍然等同于<code>&amp;'a Box&lt;dyn Foo + 'static&gt;</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// For the following trait...
+trait Bar&lt;'a&gt;: 'a { }
+
+// ...these two are the same:
+type T1&lt;'a&gt; = Box&lt;dyn Bar&lt;'a&gt;&gt;;
+type T2&lt;'a&gt; = Box&lt;dyn Bar&lt;'a&gt; + 'a&gt;;
+
+// ...and so are these:
+impl&lt;'a&gt; dyn Bar&lt;'a&gt; {}
+impl&lt;'a&gt; dyn Bar&lt;'a&gt; + 'a {}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="static生命周期"><a class="header" href="#static生命周期"><code>'static</code>生命周期</a></h2>
+<p>除非指定明确的生命周期, 否则引用类型的常数和静态声明都具有隐式的<code>'static</code>生命周期.因此, 涉及上面<code>'static</code>的声明可以在没有标注生命周期.</p>
+<pre><pre class="playground"><code class="language-rust">#![allow(unused)]
+fn main() {
+// STRING: &amp;'static str
+const STRING: &amp;str = "bitstring";
+
+struct BitsNStrings&lt;'a&gt; {
+    mybits: [u32; 2],
+    mystring: &amp;'a str,
+}
+
+// BITS_N_STRINGS: BitsNStrings&lt;'static&gt;
+const BITS_N_STRINGS: BitsNStrings&lt;'_&gt; = BitsNStrings {
+    mybits: [1, 2],
+    mystring: STRING,
+};
+}</code></pre></pre>
+<p>请注意, 如果<code>static</code>或<code>const</code>项包含函数或闭包引用, 本身包含引用, 则编译器将首先尝试标准省略规则.如果它无法通过其常用的规则来解决生命周期, 那么它将出错.例如：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct Foo;
+</span><span class="boring">struct Bar;
+</span><span class="boring">struct Baz;
+</span><span class="boring">fn somefunc(a: &amp;Foo, b: &amp;Bar, c: &amp;Baz) -&gt; usize {42}
+</span>// Resolved as `fn&lt;'a&gt;(&amp;'a str) -&gt; &amp;'a str`.
+const RESOLVED_SINGLE: fn(&amp;str) -&gt; &amp;str = |x| x;
+
+// Resolved as `Fn&lt;'a, 'b, 'c&gt;(&amp;'a Foo, &amp;'b Bar, &amp;'c Baz) -&gt; usize`.
+const RESOLVED_MULTIPLE: &amp;dyn Fn(&amp;Foo, &amp;Bar, &amp;Baz) -&gt; usize = &amp;somefunc;
+}</code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct Foo;
+</span><span class="boring">struct Bar;
+</span><span class="boring">struct Baz;
+</span><span class="boring">fn somefunc&lt;'a,'b&gt;(a: &amp;'a Foo, b: &amp;'b Bar) -&gt; &amp;'a Baz {unimplemented!()}
+</span>// There is insufficient information to bound the return reference lifetime
+// relative to the argument lifetimes, so this is an error.
+const RESOLVED_STATIC: &amp;dyn Fn(&amp;Foo, &amp;Bar) -&gt; &amp;Baz = &amp;somefunc;
+//                                            ^
+// this function's return type contains a borrowed value, but the signature
+// does not say whether it is borrowed from argument 1 or argument 2
+}</code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="chapter_10.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="chapter_12.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="chapter_10.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="chapter_12.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

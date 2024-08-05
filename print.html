@@ -1,0 +1,1888 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>LifetimeKata</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html">前言</a></li><li class="chapter-item expanded "><a href="chapter_0.html">章节0: 回顾</a></li><li class="chapter-item expanded "><a href="chapter_1.html">章节1: 生命周期的必要性</a></li><li class="chapter-item expanded "><a href="chapter_2.html">章节2: 生命周期的解释</a></li><li class="chapter-item expanded "><a href="chapter_3.html">章节3: 生命周期的省略规则</a></li><li class="chapter-item expanded "><a href="chapter_4.html">章节4: 可变引用和容器</a></li><li class="chapter-item expanded "><a href="chapter_5.html">章节5: 类型上的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_6.html">章节6: impl上的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_7.html">章节7: 特殊的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_8.html">章节8: 终章</a></li><li class="chapter-item expanded "><a href="chapter_9.html">章节9: 延伸阅读</a></li><li class="chapter-item expanded "><a href="chapter_10.html">章节10: 附注: trait生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_11.html">章节11: 附注: 译rust reference生命周期的省略规则</a></li><li class="chapter-item expanded "><a href="chapter_12.html">章节12: 附注: reborrow</a></li><li class="chapter-item expanded "><a href="chapter_13.html">章节13: 附注: impl trait的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_14.html">章节14: 附注: HRTB & GAT</a></li><li class="chapter-item expanded "><a href="chapter_15.html">章节15: 附注: 统一访问借用和重借用</a></li><li class="chapter-item expanded "><a href="chapter_16.html">章节16: 附注: 译RFC 599默认对象生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_17.html">章节17: 附注: 译RFC 1156调整默认对象生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_18.html">章节18: 附注: 译RFC 1951扩展impl trait</a></li><li class="chapter-item expanded "><a href="chapter_19.html">章节19: 附注: 译RFC 2394async await</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">LifetimeKata</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/thinkgos/lifetimekata" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="lifetimekata"><a class="header" href="#lifetimekata">LifetimeKata</a></h1>
+<p><a href="https://tfpk.github.io/lifetimekata/">英文</a></p>
+<p>欢迎来到LifetimeKata, 一组可用于提高您对<code>Rust</code>生命周期的理解的练习.
+许多任务涉及编写编译代码, 有些任务还涉及创建特定错误.</p>
+<p>您应该按顺序完成kata, 因为它们的难度是逐渐增加, 并且依赖于之前的kata.</p>
+<h2 id="准备开始"><a class="header" href="#准备开始">准备开始</a></h2>
+<p>克隆仓库:</p>
+<pre><code class="language-sh">git clone https://www.github.com/thinkgos/lifetimekata
+</code></pre>
+<p>大多数练习分两步进行：</p>
+<pre><code class="language-sh">cargo build --package ex04
+</code></pre>
+<p>然后:</p>
+<pre><code class="language-sh">cargo test --package ex04
+</code></pre>
+<p>或者:</p>
+<pre><code class="language-sh">cargo run --package ex04
+</code></pre>
+<p>取决于它是<code>binary</code>还是<code>library</code>。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="章节0-引用和生命周期回顾"><a class="header" href="#章节0-引用和生命周期回顾">章节0: 引用和生命周期回顾</a></h1>
+<p><em>这个章节是回顾,一些读者可能很熟悉.如果您已经知道引用是什么, 则可以跳过本章.</em></p>
+<p>如果您已经使用<code>Rust</code>一段时间, 您可能已经遇到过引用, 对于每个类型<code>T</code>,有两种类型的引用:</p>
+<ul>
+<li><code>&amp;T</code>: <code>T</code>的共享引用(通常称为共享借用). 您可以拥有任意数量的共享引用, 但它们不允许您修改它们引用的数据.</li>
+<li><code>&amp;mut T</code>: <code>T</code>的可变引用(通常称为独占借用). 您同时只能拥有一个可变引用, 但它们允许您修改它们引用的数据.</li>
+</ul>
+<p>引用使得在不需要复制数据的情况下调用函数变得容易.</p>
+<p><code>Rust</code>引用的强大之处在于, 它始终保证引用存在的东西(即尚未被删除/释放/超出范围). 对不再存在的东西的引用被称为"dangling reference(悬空引用)", 而<code>Rust</code> 保证永远不会存在悬空引用. 因此, 这个例子将无法编译：</p>
+<pre><code class="language-rust ignore">fn main() {
+    let x_ref = {
+        let x = 3;
+        &amp;x
+    };
+    // x_ref would now refer to `x`, but `x` is out of scope, so x_ref is dangling.
+   
+    println!("{}", x_ref)
+}</code></pre>
+<p>大多数流行的语言(Python, Java, etc.)通过在运行时不断检查是否有对某个对象的引用, 只有在没有引用时才进行释放, 从而避免了悬空引用的问题. 这被称为"垃圾回收", 其优点是你无需考虑对象何时被释放的问题. 语言会自动为您完成这个操作. 缺点是性能方面的 -- 垃圾回收需要不时地停止您的程序, 以便语言可以扫描您拥有的每个引用.</p>
+<p>一些语言(尤其是C和Assembly)为你提供了"指针"类型. 由于指针是内存中的原始地址, 编译器让程序员确保它们没有悬空引用. 这使得它们可以在内存受限或性能关键的环境中使用, 但不幸的是, 这意味着一个错误可能会在内存被销毁后访问内存, 导致崩溃, 甚至更糟的情况是安全问题.</p>
+<p><code>Rust</code>非常强大, 因为它为你提供了在运行时永远不会访问已释放内存的便利性；但为此付出的代价是在编译时需要确信你已经正确使用了引用.</p>
+<h2 id="不相信编译器的一个示例"><a class="header" href="#不相信编译器的一个示例">不相信编译器的一个示例</a></h2>
+<p>毫无疑问, 您之前有遇到过如下错误：</p>
+<pre><code class="language-rust ignore">fn main() {
+    let mut my_reference: Option&lt;&amp;String&gt; = None;
+
+    // Starting a scope.
+    {
+        // my_variable created                               // \ \
+        let my_variable: String = "hello".to_string();       // | |
+        my_reference = Some(&amp;my_variable);                   // | |- my_variable exists here. ('variable)
+        // At the end of the scope, `my_variable` is dropped // | |
+        drop(my_variable);                                   // | |
+        // my variable destroyed                             // | /
+    }                                                        // | - my_reference needs to exist here. ('reference)
+                                                             // |
+    if let Some(reference) = my_reference {                  // |
+        println!("{}", reference);                           // |
+    }                                                        // /
+}</code></pre>
+<pre><code class="language-sh">error[E0597]: `my_variable` does not live long enough
+  --&gt; bad_lifetimes.rs:7:29
+   |
+7  |         my_reference = Some(&amp;my_variable);
+   |                             ^^^^^^^^^^^^ borrowed value does not live long enough
+8  |     }
+   |     - `my_variable` dropped here while still borrowed
+9  |
+10 |     if let Some(reference) = my_reference {
+   |                              ------------ borrow later used here
+
+error: aborting due to previous error; 1 warning emitted
+
+</code></pre>
+<p>显然, 在这个例子中, 由于<code>my_variable</code>在<code>my_reference</code>之前超出了作用域, 所以<code>if let</code>可能会尝试访问<code>my_reference</code>, 并发现它引用的变量已经不存在了.</p>
+<p><code>Rust</code>表示这个变量"没有活得足够长". 它注意到"<code>my_variable</code>有可能在<code>my_reference</code>中存储该引用之前, 就已经被丢弃了"</p>
+<p>一般的, 我们可以通过注意到这两者存在的代码区域来理解. 引用存在的代码区域比变量存在的代码区域要长.
+这表明在引用存在的某部分时间内, 变量可能已经被丢弃, 因此有可能存在悬空引用.</p>
+<p>我们称一个引用必须有效的代码区域为"生命周期". 我们可以使用语法<code>'name</code>给生命周期进行命名.
+所以我们认为<code>'variable</code>是代码中引用该变量有效的区域.
+另外, 可以认为<code>'reference</code>是引用可能被使用的代码区域.
+我们可以正式地说<code>'variable</code>需要比<code>'reference</code>的生命周期要长.</p>
+<p>这显然是正确的, 简言之"引用有效的代码区域必须大于引用实际可用的代码区域".
+考虑相反的情况: 如果引用在引用无效的地方可用, 你将得到一些是无效的东西: 不安全的代码, 换句话说, 就是bug.</p>
+<h2 id="那么这本书是关于什么"><a class="header" href="#那么这本书是关于什么">那么这本书是关于什么?</a></h2>
+<p>在某些地方, <code>Rust</code>编译器无法推导出生命周期, 需要程序员显式指定. 本书旨在帮助您改进显式生命周期的编写（例如<code>&amp;'a str</code>）. 这将从下一章开始！</p>
+<h2 id="练习-完成rustlings生命周期的练习"><a class="header" href="#练习-完成rustlings生命周期的练习">练习: 完成<code>Rustlings</code>生命周期的练习</a></h2>
+<p>如果你不确定自己是否理解以上内容, 在继续阅读之前, <a href="https://github.com/rust-lang/rustlings/tree/main/exercises/lifetimes">完成<code>Rustlings</code>生命周期的练习</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="什么是生命周期标注"><a class="header" href="#什么是生命周期标注">什么是生命周期标注?</a></h1>
+<p>在上一节中, 我们讨论了单个函数中生命周期的概念. 在所有这些示例中, 根据大括号能很清楚变量或引用存在于代码的哪个区域.
+生命周期标注用于帮助编译器理解那些无法依赖于括号作用域的情况(如跨函数边界和在<code>struct</code>和<code>enum</code>内部)
+理解生命周期标注的最好方法是首先理解为什么我们需要它们. 让我们通过一些示例来看看为什么它们存在:</p>
+<p>详述生命周期的最简单示例函数, 该函数返回两个整数中较大者的引用.</p>
+<pre><code class="language-rust ignore">fn max_of_refs(a: &amp;i32, b: &amp;i32) -&gt; &amp;i32 {
+    if *a &gt; *b {
+        a
+    } else {
+        b
+    }
+}</code></pre>
+<p>假设我们这样调用这个函数:</p>
+<pre><code class="language-rust ignore">fn complex_function(a: &amp;i32) -&gt; &amp;i32 {
+    let b = 2;
+    max_of_refs(a, &amp;b)
+}
+
+fn main() {
+    let a = 1;
+    let my_num = complex_function(&amp;a);
+    println!("{my_num}");
+}</code></pre>
+<p>如果你思考这个例子, 你会发现<code>my_num</code>将会引用<code>complex_function</code>中的一个变量(该变量不再存在).
+换句话说, <code>complex_function</code>的返回值的生命周期会比<code>b</code>的生命周期更长.
+现在, 你可能会说, "但是难道编译器不能在运行时发现这个程序显然行不通吗?"
+嗯, 因为我们在使用常量, 是的, 编译器很可能能够发现这个程序行不通.
+但是如果我们使用<code>let a = rand::rand()</code>或者<code>let b = read_number_from_stdin()</code>呢?
+对于编译器来说, 很难判断这个引用是否应该是有效的.</p>
+<h2 id="好的-为什么我们不能就禁止那种情况呢"><a class="header" href="#好的-为什么我们不能就禁止那种情况呢">好的, 为什么我们不能就禁止那种情况呢?</a></h2>
+<p>你接下来的想法可能是: "好吧, 这种类型的所有引用肯定都是不可靠的;让我们禁止它们."
+明确规定这项禁止是值得的. 最简单的禁用可能是"在函数参数中不允许使用引用",
+但这可能会有些过于严格(并且对<code>Rust</code>的实用性完全具有破坏性).</p>
+<p>一个更明智的禁止, 可以涵盖这种情况的内容如下: "任何具有多个引用输入的函数不得返回引用(或包含引用的内容).", 这样可以避免我们所见问题, 即不清楚引用来自何处. 这将禁止上述示例.</p>
+<p>但是, 这符合人体工程学吗?如果你想要一个像这样的函数怎么办:</p>
+<pre><code class="language-rust ignore">fn only_if_greater(number: &amp;i32, greater_than: &amp;i32) -&gt; Option&lt;&amp;i32&gt; {
+    if number &gt; greater_than {
+        Some(number)
+    } else {
+        None
+    }
+}</code></pre>
+<p>无论以何种方式调用此函数, 我们始终知道, 如果我们的返回值是 <code>Some</code>, 它引用的是<code>number</code>. 它永远不会返回一个指向 <code>greater_than</code> 的引用.</p>
+<p>一个更有趣的例子是 <code>split</code> 函数, 它接收一个字符串, 并返回由该字符串分割的一组子字符串片段, 通过另一个字符串进行分割.</p>
+<pre><code class="language-rust ignore">fn split(text: &amp;str, delimiter: &amp;str) -&gt; Vec&lt;&amp;str&gt; {
+    let mut last_split = 0;
+    let mut matches: Vec&lt;&amp;str&gt; = vec![];
+    for i in 0..text.len() {
+        if i &lt; last_split {
+            continue
+        }
+        if text[i..].starts_with(delimiter) {
+            matches.push(&amp;text[last_split..i]);
+            last_split = i + delimiter.len(); 
+        }
+    }
+    if last_split &lt; text.len() {
+        matches.push(&amp;text[last_split..]);
+    }
+    
+    matches
+}</code></pre>
+<p>无论如何调用此函数, 它总是会从<code>text</code>返回一组切片, 而不会从<code>delimiter</code>返回.</p>
+<h2 id="唉-但是编译器不能自己解决这个问题吗"><a class="header" href="#唉-但是编译器不能自己解决这个问题吗">唉, 但是编译器不能自己解决这个问题吗?</a></h2>
+<p>到了这一步, 你可能已经注意到<code>matches.push</code>只会对<code>text</code>切片调用,
+因此, 你可能会期望编译器在这种情况下能够自动推断生命周期.</p>
+<p>在简单情况下, 这可能是可以的. 但是你的编译器可能会无法推断出生命周期. 或者在经过6个月后, 它可能能成功地推断出生命周期.</p>
+<p>因此, 编译器需要更多信息. 这些信息是通过生命周期标注提供的, 在我们详细讨论它们之前, 这里有一个练习, 希望能在我们处理语法之前加深对这些概念的理解.</p>
+<h2 id="练习-辨别哪些程序能够运行-哪些会出错"><a class="header" href="#练习-辨别哪些程序能够运行-哪些会出错">练习: 辨别哪些程序能够运行, 哪些会出错</a></h2>
+<p>在不使用任何生命周期语法的情况下, 回答每个代码示例的以下问题.</p>
+<ol>
+<li>这些输入是引用?这个函数可能会返回什么?</li>
+<li>哪些例子可能会出现悬空引用?</li>
+</ol>
+<p>NOTE: <strong>这些代码示例无法编译; 您需要阅读并思考它们</strong>.</p>
+<p>一旦你决定好了你的答案, 代码块右上角的"眼睛"按钮将显示出正确答案.</p>
+<pre><code class="language-rust ignore">
+<span class="boring">// a is the only input reference.
+</span><span class="boring">// the only thing the function can return is a
+</span>fn identity(a: &amp;i32) -&gt; &amp;i32 {
+    a
+}
+
+<span class="boring">// This does not have any dangling references.
+</span>fn example_1() {
+    let x = 4;
+    let x_ref = identity(&amp;x);
+    assert_eq!(*x_ref, 4);
+}
+
+<span class="boring">// This is always going to cause a dangling reference.
+</span>fn example_2() {
+    let mut x_ref: Option&lt;&amp;i32&gt; = None;
+    {
+        let x = 7;
+        x_ref = Some(identity(&amp;x));
+    }
+    assert_eq!(*x_ref.unwrap(), 7);
+}</code></pre>
+<pre><code class="language-rust ignore"><span class="boring">// the contents of `opt` and `otherwise` are both references
+</span><span class="boring">// either of them could be returned.
+</span>fn option_or(opt: Option&lt;&amp;i32&gt;, otherwise: &amp;i32) -&gt; &amp;i32 {
+    opt.unwrap_or(otherwise)
+}
+
+<span class="boring">// No possibility for a dangling reference here.
+</span>fn example_1() {
+    let x = 8;
+    let y = 10;
+    let my_number = Some(&amp;x);
+    assert_eq!(&amp;x, option_or(my_number, &amp;y));
+}
+
+<span class="boring">// This is always a dangling reference.
+</span>fn example_2() {
+    let answer = {
+        let y = 4;
+        option_or(None, &amp;y)
+    };
+    assert_eq!(answer, &amp;4);
+}
+
+<span class="boring">// This is never a dangling reference.
+</span>fn example_3() {
+    let y = 4;
+    let answer = {
+        option_or(None, &amp;y)
+    };
+    assert_eq!(answer, &amp;4);
+}
+
+<span class="boring">// This is always a dangling reference.
+</span>fn example_4() {
+    let y = 4;
+    let answer = {
+        let x = 7;
+        option_or(Some(&amp;x), &amp;y)
+    };
+    assert_eq!(answer, &amp;7);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="生命周期-悬空引用的解决方案"><a class="header" href="#生命周期-悬空引用的解决方案">生命周期: 悬空引用的解决方案</a></h1>
+<p>我们在这里看到, 悬空引用发生的原因是函数丢失有关引用来源的信息.</p>
+<p>编译器只有在知道输入和输出的生命周期如何相互作用时, 才能决定函数是否正确.
+因此, 我们需要在输入和输出的生命周期相同时告诉编译器.</p>
+<p>我们可以做的是告诉计算机: "只要这些输入/输出的生命周期相同,我的函数就适用于任何生命周期".
+让我们来看一下这个语法:</p>
+<pre><pre class="playground"><code class="language-rust">fn some_if_greater&lt;'lifetime1, 'lifetime2&gt;(number: &amp;'lifetime1 i32, greater_than: &amp;'lifetime2 i32) -&gt; Option&lt;&amp;'lifetime1 i32&gt; {
+    if number &gt; greater_than {
+        Some(number)
+    } else {
+        None
+    }
+}
+<span class="boring">fn main() {
+</span><span class="boring">    let (n, gt) = (7, 4);
+</span><span class="boring">    let test = some_if_greater(&amp;n, &amp;gt);
+</span><span class="boring">}</span></code></pre></pre>
+<p>让我们来看下这个做了什么:</p>
+<ul>
+<li><code>fn my_function&lt;'lifetime1, 'lifetime2&gt;(...)</code>: 我们在这里做的是为程序所需的生命周期选择相应名称.</li>
+<li><code>number: &amp;'lifetime1 i32</code>: 这个是我们告诉编译器, 这个引用必须在一个被称为<code>'lifetime1</code>的代码区域内存在.</li>
+<li><code>greater_than: &amp;'lifetime2 i32</code>: 这是我们告诉编译器这个引用必须在一个被称为<code>'lifetime2</code>的代码区域中存在.
+这意味着 <code>greater_than</code> 和 <code>number</code> 的生命周期没有任何关联.</li>
+<li><code>-&gt; Option&lt;&amp;'lifetime1 i32&gt;</code>: 这正是生命周期至关重要的地方.
+我们所要表达的是, <code>number</code> 变量和我们的返回值必须在完全相同的代码区域内有效.</li>
+</ul>
+<p>所以, 我们所做的是告诉编译器, 只有在<code>number</code>和返回值在相同的代码区域有效时才能调用我们的函数.</p>
+<h2 id="练习-标注生命周期"><a class="header" href="#练习-标注生命周期">练习: 标注生命周期</a></h2>
+<p>为了进行一些初始练习, 本节的练习是对前两章中的一些示例进行生命周期标注.</p>
+<p>你需要:</p>
+<ul>
+<li>决定需要多少个生命周期参数</li>
+<li>为每个生命周期参数命名, 在函数名后使用<code>&lt;</code>尖括号<code>&gt;</code>括起来</li>
+<li>在每个引用处添加适当的生命周期注解</li>
+<li>检查代码是否能够编译通过</li>
+<li>思考每个生命周期可能适用于代码的哪个区域</li>
+</ul>
+<p>你会注意到每个函数都有<code>#[lifetimes_required(!)]</code>注解.你需要将它保留在那里以完成这个练习.
+这会指示编译器在你遗漏了生命周期的情况下抛出错误; 即使编译器并不需要这个生命周期.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="为什么大多从未使用过周期标注"><a class="header" href="#为什么大多从未使用过周期标注">为什么大多从未使用过周期标注</a></h1>
+<p>在上一章中, 了解了我们为什么需要生命周期. 我们看到编译器无法自动地确定参数或返回值中的引用之间如何关联. 这就是为什么需要我们告诉编译器引用是如何相互关联的.</p>
+<p>这么说吧, 你可能在<code>Rust</code>中编写过一个需要引用(通常是<code>&amp;str</code>类型)的函数, 而且并没有显式地标注生命周期. 为什么在这种情况下你不需要注明生命周期呢? 原因是在<code>Rust</code>中存在一些常见的模式, 它们使编译器明确知道使用了哪些生命周期. 让我们来探讨一些常见的模式:</p>
+<h2 id="例1-没有返回引用"><a class="header" href="#例1-没有返回引用">例1: 没有返回引用</a></h2>
+<pre><pre class="playground"><code class="language-rust">fn add(a: &amp;i32, b: &amp;i32) -&gt; i32 {
+    *a + *b
+}
+
+<span class="boring">fn main() {
+</span><span class="boring">    assert_eq!(add(&amp;3, &amp;4), 7);
+</span><span class="boring">}</span></code></pre></pre>
+<p>这个函数中变量<code>'a</code>和<code>'b</code>的生命周期不需要有关联. 假设只有一个线程, 并且假设代码是安全的, 在函数执行过程中, 这两个变量所引用的变量不可能在函数内被释放. 在函数执行完毕之后, 它们可以一直存在, 直到自己的生命周期结束.</p>
+<h2 id="列2-只有一个输入引用"><a class="header" href="#列2-只有一个输入引用">列2: 只有一个输入引用</a></h2>
+<pre><pre class="playground"><code class="language-rust">fn identity(a: &amp;i32) -&gt; &amp;i32 {
+    a
+}
+
+<span class="boring">fn main() {
+</span><span class="boring">    let x = 52;
+</span><span class="boring">    assert_eq!(&amp;x, identity(&amp;x));
+</span><span class="boring">}</span></code></pre></pre>
+<p>需要注意的是,通常情况(<em>附注: 这在静态类型中是可能的, 比如字符串字面量, 不过我们稍后会涵盖这些内容.</em>),<br />
+如果在函数没有提供给你一个引用, 那么就不可能创建一个引用并将其传出该函数. 这是因为引用必须指向你拥有的内容. 你拥有的任何内容都会在函数结束时被丢弃. 因此, 函数内任何你拥有的内容都不能被引用并传出该函数;<br />
+而如果你被传递了一个引用, 你唯一能够返回一个引用的方式就是传递该引用.<br />
+如果在您的参数中只有一个引用, 那么您返回的唯一引用就是那个引用 -- 因此, 您返回的引用的生命周期与参数相同.</p>
+<h2 id="怎么做"><a class="header" href="#怎么做">怎么做</a></h2>
+<p><code>Rust</code>本可以将特殊编码的示例作为异常; 但这样一来, 可能会有许多情况被作为异常, 从而导致混乱的规则. 相反, <code>Rust</code> 项目已经确定了一种规则, 编译器将遵循这个规则来尝试和猜测生命周期.</p>
+<p>编译器首先将函数签名中的所有引用分为两种类型:<code>'input'</code>和<code>'output'</code>.
+<code>'Input'</code>引用是指函数参数(即其参数). <code>'Output'</code>引用是指函数的返回类型中的引用.</p>
+<p>我们将在本章中学习的两条规则是:</p>
+<ul>
+<li>每个没有提供输入生命周期的参数都将分配其各自独立的生命周期</li>
+<li>如果所有输入引用上有且只有一个生命周期, 那么那个生命周期就会被赋予<em>每个</em>输出.</li>
+</ul>
+<p>让我们看看这些规则如何影响上面的两个例子, 以及上一章的一个例子:</p>
+<h3 id="例1-没有输出引用"><a class="header" href="#例1-没有输出引用">例1: 没有输出引用</a></h3>
+<p>我们有:</p>
+<pre><code class="language-rust ignore">fn add(a: &amp;mut i32, b: &amp;mut i32) -&gt; i32 {
+    *a + *b
+}</code></pre>
+<p>有两个输入生命周期, 分别作用在变量<code>a</code>和<code>b</code>的类型. 每个变量都被分配了自己的生命周期:</p>
+<pre><pre class="playground"><code class="language-rust">fn add&lt;'elided1, 'elided2&gt;(a: &amp;'elided1 i32, b: &amp;'elided2 i32) -&gt; i32 {
+    *a + *b
+}
+
+<span class="boring">fn main() {
+</span><span class="boring">    assert_eq!(add(&amp;3, &amp;4), 7);
+</span><span class="boring">}</span></code></pre></pre>
+<p>没有输出生命周期, 所以我们就到这里结束.</p>
+<p>这个例子现在是正确的 -- <code>a</code> 和 <code>b</code> 的两个生命周期可以完全无关;而输出是一个拥有的值, 因此它不依赖于任何生命周期.</p>
+<h3 id="例2-只有一个输入引用"><a class="header" href="#例2-只有一个输入引用">例2: 只有一个输入引用</a></h3>
+<p>我们有:</p>
+<pre><pre class="playground"><code class="language-rust">fn identity(a: &amp;i32) -&gt; &amp;i32 {
+    a
+}
+
+<span class="boring">fn main() {
+</span><span class="boring">    let x = 52;
+</span><span class="boring">    assert_eq!(&amp;x, identity(&amp;x));
+</span><span class="boring">}</span></code></pre></pre>
+<p>只有一个输入生命周期(针对类型<code>a</code>的):</p>
+<pre><pre class="playground"><code class="language-rust">fn identity&lt;'elided1&gt;(a: &amp;'elided1 i32) -&gt; &amp;i32 {
+    a
+}
+
+<span class="boring">fn main() {
+</span><span class="boring">    let x = 52;
+</span><span class="boring">    assert_eq!(&amp;x, identity(&amp;x));
+</span><span class="boring">}</span></code></pre></pre>
+<p>只有一个输出生命周期; 而所有输入生命周期共享相同的生命周期(<code>'elided1</code>).
+因此, 我们可以分配该生命周期给所有输出:</p>
+<pre><pre class="playground"><code class="language-rust">fn identity&lt;'elided1&gt;(a: &amp;'elided1 i32) -&gt; &amp;'elided1 i32 {
+    a
+}
+
+<span class="boring">fn main() {
+</span><span class="boring">    let x = 52;
+</span><span class="boring">    assert_eq!(&amp;x, identity(&amp;x));
+</span><span class="boring">}</span></code></pre></pre>
+<p>现在这已经有意义了: 你能够返回一个<code>&amp;i32</code>的唯一可能方式是从一个参数中获得它;而且我们可以看出输入和输出拥有相同的生命周期.</p>
+<h3 id="例3-省略限制"><a class="header" href="#例3-省略限制">例3: 省略限制</a></h3>
+<p>让我们再来看一下上一章的这个例子.</p>
+<pre><code class="language-rust ignore">fn max_of_refs(a: &amp;i32, b: &amp;i32) -&gt; &amp;i32 {
+    if *a &gt; *b {
+        a
+    } else {
+        b
+    }
+}</code></pre>
+<p>和示例1一样, 这里有两个输入, 因此我们赋予它们不同的生命周期. :</p>
+<pre><code class="language-rust ignore">fn max_of_refs&lt;'elided1, 'elided2&gt;(a: &amp;'elided1 i32, b: &amp;'elided2 i32) -&gt; &amp;i32 {
+    if *a &gt; *b {
+        a
+    } else {
+        b
+    }
+}</code></pre>
+<p>与示例1不同, 我们需要一个输出生命周期！根据第二条规则, 只有当我们有且仅有一个输入生命周期时, 才可以省略输出生命周期. 因此, <code>Rust</code>认为在这里省略生命周期是错误的 -- 用户必须提供更多信息！</p>
+<h2 id="练习-应用这些规则"><a class="header" href="#练习-应用这些规则">练习: 应用这些规则</a></h2>
+<p>在这个练习中, 有四个函数缺少一些生命周期注解.
+你的任务是按照生命周期省略规则, 像编译器一样为这些函数添加生命周期</p>
+<p>在未来的<code>lifetimekata</code>版本中, 这些将会自动进行检查. 而现在, 在你完成后, 将你的答案与解决方案进行比较.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="可变引用和容器"><a class="header" href="#可变引用和容器">可变引用和容器</a></h1>
+<p>可变引用与常规引用的生命周期省略规则是完全相同. 之所以独立一章关于它们, 是因为如果你有一个可变引用, 即使没有返回值, 你可能需要告诉编译器有关生命周期的信息.</p>
+<p>例如, 让我们来看看这个例子:</p>
+<pre><code class="language-rust ignore">fn insert_value(my_vec: &amp;mut Vec&lt;&amp;i32&gt;, value: &amp;i32) {
+    my_vec.push(value);
+}</code></pre>
+<p>我们不返回任何东西；所以生命周期无关紧要, 对吗?</p>
+<p>很遗憾, 生命周期仍然很重要. <code>value</code>引用实际上需要与<code>vector</code>里的内容具有相同的生命周期. 如果它们的生命周期不同, 那么<code>vector</code>可能包含无效的引用. 例如, 下面这种情况下会发生什么?</p>
+<pre><code class="language-rust ignore">fn insert_value(my_vec: &amp;mut Vec&lt;&amp;i32&gt;, value: &amp;i32) {
+    my_vec.push(value);
+}
+
+fn main() {
+    let x = 1;
+    let my_vec = vec![&amp;x];
+    {
+        let y = 2;
+        insert_value(&amp;mut my_vec, &amp;y);
+    }
+    println!("{my_vec:?}");
+}</code></pre>
+<p>上面示例中,在尝试打印<code>vector</code>时, <code>y</code>的引用是悬空的！</p>
+<p>我们可以使用生命周期来确保两个引用存在相同的存活时间:</p>
+<pre><pre class="playground"><code class="language-rust">fn insert_value&lt;'vec_lifetime, 'contents_lifetime&gt;(my_vec: &amp;'vec_lifetime mut Vec&lt;&amp;'contents_lifetime i32&gt;, value: &amp;'contents_lifetime i32) {
+    my_vec.push(value)
+}
+fn main(){
+    let mut my_vec = vec![];
+    let val1 = 1;
+    let val2 = 2;
+    
+    insert_value(&amp;mut my_vec, &amp;val1);
+    insert_value(&amp;mut my_vec, &amp;val2);
+    
+    println!("{my_vec:?}");
+}</code></pre></pre>
+<p>这个签名表明存在两个生命周期:</p>
+<ul>
+<li><code>'vec_lifetime</code>: 我们传递给函数的<code>vector</code>将需要在一定时间内存活.</li>
+<li><code>'contents_lifetime</code>: <code>vector</code>里的内容需要在一定时间内存活.
+重要的是, 我们插入的新<code>value</code>需要与<code>vector</code>里的内容存活一样长的时间. 如果不是这样, 最终会得到一个包含无效引用的<code>vector</code>.</li>
+<li><strong>NOTE:这里存在一个隐式生命周期,即 <code>where contents_lifetime: vec_lifetime</code>, <code>vector</code>的内容要比<code>vector</code>活的更长</strong></li>
+</ul>
+<h2 id="我们真的需要两个生命周期么"><a class="header" href="#我们真的需要两个生命周期么">我们真的需要两个生命周期么?</a></h2>
+<p>也许您会想知道, 如果我们不提供两个生命周期, 会发生什么情况? 只提供一个生命周期能正常工作吗?</p>
+<pre><code class="language-rust ignore">fn insert_value&lt;'one_lifetime&gt;(my_vec: &amp;'one_lifetime mut Vec&lt;&amp;'one_lifetime i32&gt;, value: &amp;'one_lifetime i32) {
+    my_vec.push(value)
+}
+
+fn main(){
+    let mut my_vec: Vec&lt;&amp;i32&gt; = vec![];
+    let val1 = 1;
+    let val2 = 2;
+    
+    insert_value(&amp;mut my_vec, &amp;val1);
+    insert_value(&amp;mut my_vec, &amp;val2);
+    
+    println!("{my_vec:?}");
+}</code></pre>
+<p>不, 它没有正常工作. 我们出现了两个错误. 让我们看第一个错误:</p>
+<pre><code class="language-sh">error[E0499]: cannot borrow `my_vec` as mutable more than once at a time
+  --&gt; /tmp/rust.rs:11:18
+   |
+10 |     insert_value(&amp;mut my_vec, &amp;val1);
+   |                  ----------- first mutable borrow occurs here
+11 |     insert_value(&amp;mut my_vec, &amp;val2);
+   |                  ^^^^^^^^^^^
+   |                  |
+   |                  second mutable borrow occurs here
+   |                  first borrow later used here
+
+</code></pre>
+<p>这似乎有些奇怪 -- 为什么不能借用 <code>my_vec</code>?</p>
+<p>好的, 让我们逐步了解编译器所看到的内容: <code>&amp;val</code> 需要在 <code>my_vec</code> 存在的整个时间内保持有效:</p>
+<pre><code class="language-rust ignore"><span class="boring">fn insert_value&lt;'one_lifetime&gt;(my_vec: &amp;'one_lifetime mut Vec&lt;&amp;'one_lifetime i32&gt;, value: &amp;'one_lifetime i32) {
+</span><span class="boring">    my_vec.push(value)
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main(){
+</span>    let mut my_vec: Vec&lt;&amp;i32&gt; = vec![];
+    let val1 = 1;
+    let val2 = 2;
+    
+    insert_value(&amp;mut my_vec, &amp;val1); // \
+    insert_value(&amp;mut my_vec, &amp;val2); // | - &amp;val1 needs to last this long.
+                                      // |
+    println!("{my_vec:?}");           // /
+<span class="boring">}</span></code></pre>
+<p>而<code>&amp;mut my_vec</code>只需要在<code>insert_value</code>函数的存活时间内有效即可.</p>
+<pre><code class="language-rust ignore"><span class="boring">fn insert_value&lt;'one_lifetime&gt;(my_vec: &amp;'one_lifetime mut Vec&lt;&amp;'one_lifetime i32&gt;, value: &amp;'one_lifetime i32) {
+</span><span class="boring">    my_vec.push(value)
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main(){
+</span>    let mut my_vec: Vec&lt;&amp;i32&gt; = vec![];
+    let val1 = 1;
+    let val2 = 2;
+    
+    insert_value(&amp;mut my_vec, &amp;val1); // &lt;- &amp;mut my_vec only needs to last this long.
+    insert_value(&amp;mut my_vec, &amp;val2); 
+    
+    println!("{my_vec:?}");
+<span class="boring">}</span></code></pre>
+<p>但是, 我们已经告诉编译器它需要让<code>&amp;val1</code>和<code>&amp;mut my_vec</code>的借用拥有相同的生命周期.
+因此, 编译器会延长对<code>&amp;mut my_vec</code>的借用, 以确保它们拥有相同的生命周期: 如果让<code>&amp;mut my_vec</code>的生命周期与<code>&amp;val1</code>一样长, 它将在代码中拥有单一的代码区域:</p>
+<pre><code class="language-rust ignore"><span class="boring">fn insert_value&lt;'one_lifetime&gt;(my_vec: &amp;'one_lifetime mut Vec&lt;&amp;'one_lifetime i32&gt;, value: &amp;'one_lifetime i32) {
+</span><span class="boring">    my_vec.push(value)
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main(){
+</span>    let mut my_vec: Vec&lt;&amp;i32&gt; = vec![];
+    let val1 = 1;
+    let val2 = 2;
+    
+    insert_value(&amp;mut my_vec, &amp;val1); // \
+    insert_value(&amp;mut my_vec, &amp;val2); // | - 'one_lifetime must be this region of code.
+                                      // |
+    println!("{my_vec:?}");           // /
+<span class="boring">}</span></code></pre>
+<p>当然, 那没问题. 但现在编译器继续到了下一行, 它发现你正在尝试再次借用 <code>&amp;mut my_vec</code>. 前面编译器已经决定 <code>&amp;mut my_vec</code> 必须存在直到函数结束. 所以现在, 你正在要求它创建两个可变引用... 而这是不允许的.所以编译器会抛出一个错误 -- 你不能再次借用 <code>&amp;mut my_vec</code>.</p>
+<h2 id="为什么有两个生命周期可以修复这个错误"><a class="header" href="#为什么有两个生命周期可以修复这个错误">为什么有两个生命周期可以修复这个错误?</a></h2>
+<p>在阅读这部分内容之前先思考一下 -- 为什么拥有两个生命周期可以解决这个错误?</p>
+<p>前面, 编译器确定<code>&amp;mut my_vec</code>和 <code>&amp;val1</code>拥有相同的生命周期, 换句话说, 它们存活的一样长.
+通过使用两个生命周期, 我们告诉编译器 <code>&amp;mut my_vec</code> 和 <code>&amp;val1</code> 不一定必须需要有相同的存活时间.
+因此, 它找到了下面生命周期的方式:</p>
+<pre><code class="language-rust ignore">fn insert_value&lt;'vec_lifetime, 'contents_lifetime&gt;(my_vec: &amp;'vec_lifetime mut Vec&lt;&amp;'contents_lifetime i32&gt;, value: &amp;'contents_lifetime i32) {
+    my_vec.push(value)
+}
+
+fn main(){
+    let mut my_vec: Vec&lt;&amp;i32&gt; = vec![];
+    let val1 = 1;
+    let val2 = 2;
+    
+    insert_value(&amp;mut my_vec, &amp;val1); // &lt;- 'vec_lifetime \
+    insert_value(&amp;mut my_vec, &amp;val2); //                  | 'contents_lifetime
+                                      //                  |
+    println!("{my_vec:?}");           //                  /
+}</code></pre>
+<h2 id="练习第1部分另一个错误"><a class="header" href="#练习第1部分另一个错误">练习第1部分：另一个错误</a></h2>
+<p>首先, 让我们来看看上一小节中出现的另一个错误:</p>
+<pre><code class="language-sh">error[E0502]: cannot borrow `my_vec` as immutable because it is also borrowed as mutable
+  --&gt; /tmp/rust.rs:13:16
+   |
+10 |     insert_value(&amp;mut my_vec, &amp;val1);
+   |                  ----------- mutable borrow occurs here
+...
+13 |     println!("{my_vec:?}");
+   |                ^^^^^^
+   |                |
+   |                immutable borrow occurs here
+   |                mutable borrow later used here
+   |
+</code></pre>
+<p>你能解释为什么发生此错误? 用50个或更少的词写出.</p>
+<h2 id="练习第2部分写我们的"><a class="header" href="#练习第2部分写我们的">练习第2部分：写我们的</a></h2>
+<p>在这个练习中为函数添加适当的生命周期.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="类型上的生命周期"><a class="header" href="#类型上的生命周期">类型上的生命周期</a></h1>
+<p>到目前为止, 我们仅讨论了适用于函数的生命周期. 不仅函数是需要明确生命周期的地方, 类型(<code>struct</code>和<code>enum</code>)也是需要生命周期.
+这是因为如果类型中包含了引用, 则用户需要明确其引用的生命周期.
+想象一下, 我们想将<code>＆str</code>分为两个, 并创建一个包含<code>start</code>和<code>end</code>字段的结构吗？
+好吧, 我们可以写个这样的函数:</p>
+<pre><code class="language-rust ignore">struct SplitStr {
+    start: &amp;str,
+    end: &amp;str
+}
+
+fn split&lt;'text, 'delim&gt;(text: &amp;'text str, delimiter: &amp;'delim str) -&gt; Option&lt;SplitStr&gt; {
+    let (start, end) = text.split_once(delimiter)?;
+    
+    Some(SplitStr {
+        start,
+        end
+    })
+}
+
+<span class="boring">fn main() {}</span></code></pre>
+<p>我们完成了! 正确吗？
+好吧, 这些字符串引用可以存活多长时间.
+如果我们这样调用函数该怎么办:</p>
+<pre><code class="language-rust ignore"><span class="boring">struct SplitStr {
+</span><span class="boring">    start: &amp;str,
+</span><span class="boring">    end: &amp;str
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn split&lt;'text, 'delim&gt;(text: &amp;'text str, delimiter: &amp;'delim str) -&gt; Option&lt;SplitStr&gt; {
+</span><span class="boring">    let (start, end) = text.split_once(delimiter)?;
+</span><span class="boring">    
+</span><span class="boring">    Some(SplitStr {
+</span><span class="boring">        start,
+</span><span class="boring">        end
+</span><span class="boring">    })
+</span><span class="boring">}
+</span>
+fn main() {
+    let mut parts_of_string: Option&lt;SplitStr&gt; = None;
+    {
+        let my_string = String::from("First line;Second line");
+        parts_of_string = split(&amp;my_string, ";");
+    }
+    
+    println!("{parts_of_string:?}");
+}</code></pre>
+<p>好吧, <code>SplitStr</code>结构内的引用现在悬空了, 因为它们都指向<code>my_string</code>. 但它仅存活在括号内.</p>
+<p>因此, <code>Rust</code>要求我们指定结构内所有引用的生命周期. 这是我们修复代码的方式:</p>
+<pre><pre class="playground"><code class="language-rust">struct SplitStr&lt;'str_lifetime&gt; {
+    start: &amp;'str_lifetime str,
+    end: &amp;'str_lifetime str
+}
+
+fn split&lt;'text, 'delim&gt;(text: &amp;'text str, delimiter: &amp;'delim str) -&gt; Option&lt;SplitStr&lt;'text&gt;&gt; {
+    let (start, end) = text.split_once(delimiter)?;
+    
+    Some(SplitStr {
+        start,
+        end
+    })
+}
+
+<span class="boring">fn main() {}</span></code></pre></pre>
+<p>现在, 当我们返回一个<code>Option&lt;SplitStr&lt;'text&gt;&gt;</code>, 编译器会知道结构体内部的引用必须与<code>'text</code>生命周期相同,
+如果我们试图返回一个<code>SplitStr</code>, 其中引用无法活到<code>'text</code>, 那将编译错误.</p>
+<h2 id="关于枚举的说明"><a class="header" href="#关于枚举的说明">关于枚举的说明</a></h2>
+<p>在枚举中, 引用的使用方式与在结构体中的使用方式完全相同. 我们在这里不详细展开说明, 因为它们是可以互换的.</p>
+<pre><pre class="playground"><code class="language-rust">enum StringOption&lt;'a&gt; {
+    Some(&amp;'a str),
+    None
+}
+<span class="boring">fn main() {}</span></code></pre></pre>
+<h2 id="两个生命周期"><a class="header" href="#两个生命周期">两个生命周期</a></h2>
+<p>有时候, 结构体上会有多个生命周期. 这种情况发生在结构体内部的数据来自两个不同位置, 具有两个不同的生命周期.</p>
+<p>以找出两个句子中独特单词的程序为例.</p>
+<p>你可以将第一个句子设为：<code>"I love to swim and surf."</code>, 第二个句子设为：<code>"I love to ski and snowboard."</code>. 第一个句子中独特的单词是<code>"swim"</code>和<code>"surf"</code>. 第二个句子中独特的单词是<code>"ski"</code>和<code>"snowboard"</code>.</p>
+<p>如果您说这两个句子必须共享一个生命周期, 您将迫使用户确保这两个句子来自同一个地方, 因此具有相同的生命周期. 但如果第一个句子来自在整个程序运行过程中保持打开的文件, 而第二个句子是在一个循环内部扫描出来的呢?</p>
+<p>在这种情况下, 编译器会坚持认为扫描到的值在整个程序中都被保存, 这将不够方便.</p>
+<h2 id="练习-结构体上的两个生命周期"><a class="header" href="#练习-结构体上的两个生命周期">练习: 结构体上的两个生命周期</a></h2>
+<p>在这个练习中, 我们将修改一个小程序, 该程序用于查找两个字符串之间的唯一单词. 目前, 它没有任何生命周期注解, 因此无法编译.</p>
+<p>我们的目标是返回一个结构体, 其中包含来自第一个字符串的所有唯一单词, 以及来自第二个字符串的所有唯一单词. 它们应该具有分开的生命周期.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="impl的生命周期"><a class="header" href="#impl的生命周期"><code>impl</code>的生命周期</a></h1>
+<p>当<code>struct</code>或<code>enum</code>带有生命周期时, <code>impl</code>块的工作方式也会略有变化.</p>
+<p>例如, 假设我们想创建一个<code>struct</code>, 使用户能够在上面进行迭代. 你可以像这样:</p>
+<pre><code class="language-rust ignore">// First, the struct:
+
+/// This struct keeps track of where we're up to in the string.
+struct WordIterator&lt;'s&gt; {
+    position: usize,
+    string: &amp;'s str
+}
+
+impl WordIterator {
+    /// Creates a new WordIterator based on a string.
+    fn new(string: &amp;str) -&gt; WordIterator {
+        WordIterator {
+            position: 0,
+            string
+        }
+    }
+    
+    /// Gives the next word. `None` if there aren't any words left.
+    fn next_word(&amp;mut self) -&gt; Option&lt;&amp;str&gt; {
+        let start_of_word = &amp;self.string[self.position..];
+        let index_of_next_space = start_of_word.find(' ').unwrap_or(start_of_word.len());
+        if start_of_word.len() != 0 {
+            self.position += index_of_next_space + 1;
+            Some(&amp;start_of_word[..index_of_next_space]) 
+        } else {
+            None
+        }
+    }
+}
+
+fn main() {
+    let text = String::from("Twas brillig, and the slithy toves // Did gyre and gimble in the wabe: // All mimsy were the borogoves, // And the mome raths outgrabe. ");
+    let mut word_iterator = WordIterator::new(&amp;text);
+    
+    assert_eq!(word_iterator.next_word(), Some("Twas"));
+    assert_eq!(word_iterator.next_word(), Some("brillig,"));
+    
+}</code></pre>
+<p>在定义我们的<code>WordIterator</code>结构体时, 我们要求必须指定一个生命周期. 然而, 在接下来的编写的<code>impl</code> 块中, 我们并没有指定生命周期. <code>Rust</code>要求我们这样做. 我们的这个做法是告诉 <code>Rust</code>一个生命周期, 然后将该生命周期应用于我们的结构体. 让我们看看具体怎么做:</p>
+<pre><code class="language-rust ignore">impl&lt;'lifetime&gt; for WordIterator&lt;'lifetime&gt; {
+    // ...
+}</code></pre>
+<p>值得注意的是, 我们将这个过程分为两个部分 -- <code>impl&lt;'lifetime&gt;</code> 定义了一个生命周期 <code>'lifetime</code>. 它并不对这个生命周期是什么做出任何承诺, 只是声明它的存在.<br />
+然后<code>WordIterator&lt;'lifetime&gt;</code>使用我们创建的生命周期, 并且表示在 <code>WordIterator</code> 中的引用必须在 <code>lifetime</code> 内有效".<br />
+现在, 在<code>impl</code>块的任何地方, 我们可以选择使用那个生命周期. 任何我们用<code>'lifetime'</code>标注的引用，必须与任何其他用<code>'lifetime'</code>标注的引用具有相同的生命周期。</p>
+<pre><code class="language-rust ignore"><span class="boring">/// This struct keeps track of where we're up to in the string.
+</span><span class="boring">struct WordIterator&lt;'s&gt; {
+</span><span class="boring">    position: usize,
+</span><span class="boring">    string: &amp;'s str
+</span><span class="boring">}
+</span>
+impl&lt;'lifetime&gt; WordIterator&lt;'lifetime&gt; {
+    /// Creates a new WordIterator based on a string.
+    fn new(string: &amp;'lifetime str) -&gt; WordIterator&lt;'lifetime&gt; {
+        WordIterator {
+            position: 0,
+            string
+        }
+    }
+    
+    /// Gives the next word. `None` if there aren't any words left.
+    fn next_word(&amp;mut self) -&gt; Option&lt;&amp;str&gt; {
+        let start_of_word = &amp;self.string[self.position..];
+        let index_of_next_space = start_of_word.find(' ').unwrap_or(start_of_word.len());
+        if start_of_word.len() != 0 {
+            self.position += index_of_next_space + 1;
+            Some(&amp;start_of_word[..index_of_next_space]) 
+        } else {
+            None
+        }
+    }
+}
+
+<span class="boring">fn main() {
+</span><span class="boring">    let text = String::from("Twas brillig, and the slithy toves // Did gyre and gimble in the wabe: // All mimsy were the borogoves, // And the mome raths outgrabe. ");
+</span><span class="boring">    let mut word_iterator = WordIterator::new(&amp;text);
+</span><span class="boring">    
+</span><span class="boring">    assert_eq!(word_iterator.next_word(), Some("Twas"));
+</span><span class="boring">    assert_eq!(word_iterator.next_word(), Some("brillig,"));
+</span><span class="boring">    
+</span><span class="boring">}
+</span></code></pre>
+<h2 id="生命周期的省略规则回顾"><a class="header" href="#生命周期的省略规则回顾">生命周期的省略规则回顾</a></h2>
+<p>我们前面讨论了生命周期省略的两个规则. 他们是</p>
+<ul>
+<li>每个没有提供输入生命周期的参数都将分配其各自独立的生命周期</li>
+<li>如果所有输入引用上有且只有一个生命周期, 那么那个生命周期就会被赋予<em>每个</em>输出.</li>
+</ul>
+<p>既然我们已经看过具有生命周期的<code>impl</code>块, 让我们再讨论一个问题:</p>
+<ul>
+<li>如果存在多个输入生命周期, 但其中一个是<code>&amp;self</code>或<code>&amp;mut self</code>, 则借用的<code>self</code>的生命周期将分配给所有省略生命周期的输出.</li>
+</ul>
+<p>这意味着, 即使你在论证中使用了多个引用, <code>Rust</code>也会假定你返回的任何引用都来自于<code>self</code>, 而不是其他引用.</p>
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<p>在下面的代码中, 我们使用了<code>'borrow</code>生命周期来为函数进行了标注, 而不仅仅是<code>'lifetime</code>生命周期.
+<code>'borrow</code>生命周期仅在此函数内部存在, 并且仅影响其参数和返回值的借用. 正如我们之前所看到的, <code>'lifetime</code>值也约束了结构体内部字符串的生命周期.</p>
+<p>有四种方式可以实现这段代码. 描述一下每种实现方式的效果.</p>
+<p>具体来说:</p>
+<ul>
+<li>它们能编译么?</li>
+<li>他们中有没有任何一个与另一个完全相同？</li>
+<li>有没有任何情况下他们的生命周期不够通用？</li>
+<li>哪一个写法会比较正确？</li>
+</ul>
+<h3 id="例1"><a class="header" href="#例1">例1</a></h3>
+<pre><code class="language-rust ignore">    /// Gives the next word. `None` if there aren't any words left.
+<span class="boring">   /// This compiles. It's the exact same as Example 4.
+</span><span class="boring">   /// This function is problematic because the next word lives as long
+</span><span class="boring">   /// as your borrow of the iterator. In order to get the next word, you
+</span><span class="boring">   /// must drop all references to the current one.
+</span>    fn next_word&lt;'borrow&gt;(&amp;'borrow mut self) -&gt; Option&lt;&amp;'borrow str&gt; {
+        // ...
+    }</code></pre>
+<h3 id="例2"><a class="header" href="#例2">例2</a></h3>
+<pre><code class="language-rust ignore">    /// Gives the next word. `None` if there aren't any words left.
+<span class="boring">   /// This compiles. It's the exact same as Example 3.
+</span>    fn next_word&lt;'borrow&gt;(&amp;'borrow mut self) -&gt; Option&lt;&amp;'lifetime str&gt; {
+        // ...
+    }</code></pre>
+<h3 id="例3"><a class="header" href="#例3">例3</a></h3>
+<pre><code class="language-rust ignore">    /// Gives the next word. `None` if there aren't any words left.
+<span class="boring">   /// This compiles. It's probably the "most" correct, because it's the shortest
+</span><span class="boring">   /// to write, but also ensures you can retain the returned strings, even if
+</span><span class="boring">   /// you call this function multiple times.
+</span>    fn next_word(&amp;mut self) -&gt; Option&lt;&amp;'lifetime str&gt; {
+        // ...
+    }</code></pre>
+<h3 id="例4"><a class="header" href="#例4">例4</a></h3>
+<pre><code class="language-rust ignore">    /// Gives the next word. `None` if there aren't any words left.
+<span class="boring">   /// This compiles. If expanded, it would be the same as Example 1.
+</span>    fn next_word(&amp;mut self) -&gt; Option&lt;&amp;str&gt; {
+        // ...
+    }</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="特殊生命周期和约束"><a class="header" href="#特殊生命周期和约束">特殊生命周期和约束</a></h1>
+<p>在<code>Rust</code>中有两个特殊的生命周期, 值得讨论它们:</p>
+<ul>
+<li><code>'static</code></li>
+<li><code>'_</code> (隐式生命周期)</li>
+</ul>
+<h2 id="static的生命周期"><a class="header" href="#static的生命周期"><code>static</code>的生命周期</a></h2>
+<p><code>&amp;'static T</code>代表能在整个程序运行期间存活.</p>
+<p>你的程序中有一些内容是在整个程序运行期间存活. 其中最常见的情况是当它们作为信息捆绑在你的二进制文件中. 例如, 当你编写像这样的程序时:</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let my_text = "Hello World";
+}</code></pre></pre>
+<p>文本<code>"Hello World"</code>实际上位于编译后的二进制文件中某个位置. 这意味着只要程序在运行, 对它的引用始终是有效的, 因为该文本始终存在于其中.
+因此, 如果我们要谈论这种类型的文本, 我们会说它是<code>&amp;'static str</code>.</p>
+<p>类似地, 对于常量的任何引用也可以是<code>&amp;'static</code>. 例如:</p>
+<pre><pre class="playground"><code class="language-rust">const SOME_COORDINATE: (i32, i32) = (7, 4);
+
+fn main() {
+    let static_reference: &amp;'static (i32, i32) = &amp;SOME_COORDINATE;
+}</code></pre></pre>
+<h2 id="_生命周期匿名生命周期-占位符生命周期"><a class="header" href="#_生命周期匿名生命周期-占位符生命周期"><code>'_</code>生命周期(匿名生命周期, 占位符生命周期)</a></h2>
+<p>隐式生命周期在<code>Rust</code>中是指让编译器自行推断导生命周期. 这种生命周期推导在以下三种情况下非常有用:</p>
+<ul>
+<li>简化<code>impl</code>代码块</li>
+<li>输入/返回 一个需要生命周期的类型时(<code>Rust建议</code>)</li>
+<li>编写包含引用的<code>trait object</code>时</li>
+</ul>
+<h3 id="简化impl代码块"><a class="header" href="#简化impl代码块">简化<code>impl</code>代码块</a></h3>
+<p>你正在实现一个计数器结构, 其如下:</p>
+<pre><pre class="playground"><code class="language-rust">struct Counter&lt;'a&gt; {
+    counter: &amp;'a mut i32
+}
+
+impl&lt;'a&gt; Counter&lt;'a&gt; {
+    fn increment(&amp;mut self) {
+        *self.counter += 1;
+    }
+}
+
+fn main() {
+    let mut num = 0;
+    
+    let mut counter = Counter { counter: &amp;mut num };
+    counter.increment();
+    
+    println!("{num}"); // prints 1
+}</code></pre></pre>
+<p>当你仔细观察时会注意到, <code>impl</code>块实际上并没有在任何地方使用<code>'a</code>生命周期,
+因此, 我们可以通过以下方式简化代码:</p>
+<pre><code class="language-rust ignore">impl Counter&lt;'_&gt; {
+    fn increment(&amp;mut self) {
+        self.counter += 1;
+    }
+}</code></pre>
+<p>上面的两个 <code>impl</code> 块表示的意思是相同的, 只是参数稍微少一些.</p>
+<h3 id="返回结构体和枚举"><a class="header" href="#返回结构体和枚举">返回结构体和枚举</a></h3>
+<p>这是针对返回包含引用的结构体/枚举的情况的推荐做法, 你可以编写类似这样的代码:</p>
+<pre><pre class="playground"><code class="language-rust">
+struct StrWrap&lt;'a&gt;(&amp;'a str);
+
+fn make_wrapper(string: &amp;str) -&gt; StrWrap {
+    StrWrap(string)
+}
+
+<span class="boring">fn main() {}</span></code></pre></pre>
+<p>但是这种语法不再推荐使用, 当您添加<code>#![deny(rust_2018_idioms)]</code>注解时, 您将会看到以下错误:</p>
+<pre><code class="language-text">error: hidden lifetime parameters in types are deprecated
+ --&gt; src/main.rs:8:34
+  |
+_ | fn make_wrapper(string: &amp;str) -&gt; StrWrap {
+  |                                  ^^^^^^^ expected lifetime parameter
+  |
+note: the lint level is defined here
+ --&gt; src/main.rs:1:9
+  |
+_ | #![deny(rust_2018_idioms)]
+  |         ^^^^^^^^^^^^^^^^
+  = note: `#[deny(elided_lifetimes_in_paths)]` implied by `#[deny(rust_2018_idioms)]`
+help: indicate the anonymous lifetime
+  |
+_ | fn make_wrapper(string: &amp;str) -&gt; StrWrap&lt;'_&gt; {
+  |                                         ++++
+</code></pre>
+<p>根据这个提示, 可以更清楚地看出 <code>StrWrap</code> <em>确实</em>包含一个引用, 只是编译器自己解决了这个问题.</p>
+<h3 id="trait对象上的生命周期"><a class="header" href="#trait对象上的生命周期"><code>trait</code>对象上的生命周期</a></h3>
+<p>详见<a href="./chapter_10.html">章节10:生命周期限制的附注</a>以获取更多信息.</p>
+<h2 id="生命周期约束"><a class="header" href="#生命周期约束">生命周期约束</a></h2>
+<p>生命周期约束并不被广泛使用, 因此我们在这些练习中没有为其专门划分大节.
+如果你不是非常想了解细节, 可以跳过这一部分.
+简单来说, 它们允许您指定一个生命周期应该比另一个生命周期更长. 要指定一个生命周期, 可以使用类似于 <code>where 'a: 'b</code> 这样的<code>where</code>子句.</p>
+<p>引用<code>Rust</code>参考文档的说法:</p>
+<blockquote>
+<p>生命周期约束可以应用于类型或其他生命周期.
+<code>'a: 'b</code>约束通常被理解为<code>'a</code>比<code>'b</code>活的更长.
+<code>'a: 'b</code> 的意思是<code>'a</code>至少和<code>'b</code>活的一样长, 因此引用<code>&amp;'a ()</code>在与 <code>&amp;'b ()</code> 相同情况下有效.</p>
+<pre><code class="language-rust ignore">fn f&lt;'a, 'b&gt;(x: &amp;'a i32, mut y: &amp;'b i32) where 'a: 'b {
+    y = x;                      // &amp;'a i32 is a subtype of &amp;'b i32 because 'a: 'b
+    let r: &amp;'b &amp;'a i32 = &amp;&amp;0;   // &amp;'b &amp;'a i32 is well formed because 'a: 'b
+}</code></pre>
+<p><code>T: 'a</code> 的意思是<code>T</code>的所有生命周期参数都要比<code>'a</code>活的长.
+举例来说, 如果<code>'a</code>是一个无约束的生命周期参数, 那么 <code>i32: 'static</code> 和 <code>&amp;'static str: 'a</code> 这两个条件是满足的, 但是 <code>Vec&lt;&amp;'a ()&gt;: 'static</code> 则不满足.</p>
+</blockquote>
+<h2 id="练习-1"><a class="header" href="#练习-1">练习</a></h2>
+<p>你已经获得代码, 其中包含许多 <code>'a</code> 和 <code>'b</code> 生命周期的用法. 所有这些生命周期可以被替换为 <code>'_</code> 或 <code>'static</code>.
+你的任务是将所有的<code>'a</code>和<code>'b</code>生命周期出现替换为<code>'_</code>或<code>'static</code>, 以消除过多的生命周期声明, 并确保你的代码仍然能够编译通过.</p>
+<h2 id="已过时信息的附注"><a class="header" href="#已过时信息的附注">已过时信息的附注</a></h2>
+<p><code>Rust</code>版本指南曾经包含关于匿名生命周期的部分内容. 现在最受欢迎的谷歌搜索结果是<a href="https://yegeun542.github.io/rust-edition-guide-ko/rust-2018/ownership-and-lifetimes/the-anonymous-lifetime.html">这篇文章</a>, 但我建议忽略它, 因为这是过时的信息.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="终章"><a class="header" href="#终章">终章</a></h1>
+<p>恭喜你完成了"LifetimeKata". 在接下来的两章中还有更多的附注和额外阅读材料, 但这一章可以看作是一个"终章".</p>
+<p>在这个练习中, 我们将构建一个非常简单的通配符系统的克隆版本. 这允许某人查询一段文本是否匹配某个描述.</p>
+<p>值得注意的是, 实现整个功能可能需要最多一个小时. 如果你只想处理生命周期部分, 你可以从<code>solution</code>中复制代码, 但完整的完成这个练习是一个有趣而且有益.</p>
+<p>例如, 通配符<code>ab(cd|ef|gh)</code>匹配以下任何字符串之一: <code>abcd</code>, <code>abef</code>, <code>abgh</code>.</p>
+<p>您将创建一个<code>Matcher</code>结构体, 其中包括三个字段:</p>
+<ul>
+<li>一个<code>&amp;str</code>, 表示正则表达式的文本表示形式.</li>
+<li>一个<code>Vec&lt;MatcherTokens&gt;</code>, 表示正则表达式中不同的部分, 按顺序排列.</li>
+<li>一个整数, 用于跟踪正则表达式的最长匹配.</li>
+</ul>
+<p>要创建这个, 你需要一个看起来像这样的字符串: <code>hello.(town|world|universe).its.me</code>.
+这有三个组成部分:</p>
+<ul>
+<li>普通文本, 比如 <code>'hello'</code>, <code>'its'</code> 或 <code>'me'</code>, 它们只匹配精确的文本.</li>
+<li>通配符(<code>.</code>字符), 可以匹配任意单个字符.</li>
+<li>可选文本, 比如 <code>(town|world|universe)</code>, 它可以匹配列表中的一个字符串, 所以 <code>(town|world|universe)</code> 可以匹配 <code>town</code>, 或者 <code>world</code>, 或者 <code>universe</code>.</li>
+</ul>
+<p>这些可以以任何顺序混合和匹配(但永远不会有一个在另一个内部). 使用这个字符串, 你应该创建一个<code>MatcherTokens</code>的<code>vector</code>, 它们指向该字符串的相关部分.</p>
+<p>然后, 您将编写一个函数, 该函数接受另一个字符串, 并查看<code>Matcher</code>与该特定字符串匹配了多少. 您将返回一个由<code>(MatcherToken, &amp;str)</code>组成的<code>vector</code>, 其中<code>MatcherToken</code>是匹配了一些文本的标记, 而<code>&amp;str</code>是已匹配的文本.</p>
+<h2 id="一个例子"><a class="header" href="#一个例子">一个例子</a></h2>
+<p>假设你有匹配器<code>(Black|Bridge)(rock|stone|water).company</code>.这可以分为四个部分:</p>
+<ul>
+<li><code>OneOfText(["Black", "Bridge"])</code></li>
+<li><code>OneOfText(["rock", "stone", "water"])</code></li>
+<li><code>Wildcard</code></li>
+<li><code>RawText("company")</code></li>
+</ul>
+<p>现在, 让我们假设我们有以下文本: <code>BlackBridge</code>. <code>Black</code>匹配了第一个标记, 但<code>Bridge</code>不匹配第二个标记. 所以, 我们将返回: <code>vec![(OneOfText(["Black", "Bridge"]), "Black")]</code>. 我们匹配的最多标记数是<code>1</code>.</p>
+<p>以另一个例子来说, 考虑B<code>ridgestone_Tyres</code>. <code>Bridge</code>匹配第一个匹配器, <code>stone</code>匹配第二个匹配器, _匹配第三个匹配器, 但<code>Tyres</code>与<code>company</code>不匹配. 所以, 我们匹配的最多标记数是<code>3</code>. 我们将返回一个包含以下内容的<code>vector</code>:</p>
+<ul>
+<li>(<code>OneOfText(["Black", "Bridge"])</code>, <code>Bridge</code>)</li>
+<li>(<code>OneOfText(["rock", "stone", "water"])</code>, <code>"stone"</code>)</li>
+<li>(<code>Wildcard</code>, <code>"_"</code>)</li>
+</ul>
+<h3 id="关于unicode的说明"><a class="header" href="#关于unicode的说明">关于Unicode的说明</a></h3>
+<p><code>Rust</code>能够处理其字符串中的<code>Unicode</code>字符(如表情符号或日本字). 当然, 这会增加执行简单操作, 比如将字符串拆分成多个部分所需的复杂性, 因为有可能意外地将一个字符分成两半.</p>
+<p>例子中的测试不使用<code>Unicode</code>, 但是如果你想要一个真正的<code>Rust</code>体验, 可以将测试更改为包含一个<code>Unicode</code>字符(在注释中提供了一个示例).</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rust引用的延伸问读"><a class="header" href="#rust引用的延伸问读"><code>Rust</code>引用的延伸问读</a></h1>
+<p>有关生命周期的最佳信息来源是<code>Rust Reference</code>和<code>Rustonomicon</code>.如果您需要掌握关于生命周期的高级知识来完成项目, 参考中将包含这些内容. 但是, 大多数情况下, 如果您觉得需要了解生命周期的复杂内容, 您可能会发现有更简单的替代方案.</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/reference/lifetime-elision.html">The Rust Reference (Lifetime Elision)</a></li>
+<li><a href="https://doc.rust-lang.org/reference/">The Rust Reference (In General)</a></li>
+<li><a href="https://doc.rust-lang.org/nomicon/lifetimes.html">The Rustonomicon (Lifetimes)</a></li>
+</ul>
+<h2 id="其他有用的生命周期内容"><a class="header" href="#其他有用的生命周期内容">其他有用的生命周期内容</a></h2>
+<ul>
+<li><a href="https://github.com/pretzelhammer/rust-blog/blob/master/posts/common-rust-lifetime-misconceptions.md">Common Rust Lifetime Misconceptions</a></li>
+<li><a href="https://www.youtube.com/watch?v=rAl-9HwD858">Crust of Rust: Lifetime Annotations</a></li>
+</ul>
+<h2 id="variance-and-subtyping"><a class="header" href="#variance-and-subtyping">Variance and Subtyping</a></h2>
+<p>这份指南完全没有涵盖<code>"variance"</code>这个主题, 而<code>"variance"</code>是有关生命周期如何彼此替代的内容。虽然从理论上讲<code>variance</code>很重要, 但在日常理解生命周期的过程中并不常用, 因此在这本书中没有包含相关内容。</p>
+<p>您可以阅读<a href="https://doc.rust-lang.org/nomicon/subtyping.html">the Rustonomicon (subtyping)</a>以获取更多信息.</p>
+<h2 id="难题1-为什么这个程序不工作"><a class="header" href="#难题1-为什么这个程序不工作">难题1: 为什么这个程序不工作?</a></h2>
+<p>如果您有兴趣解决一个非常具有挑战性的练习, 以测试您对生命周期和泛型的理解, 以下练习可能会很有趣.</p>
+<p>这应该是练习5中实施代码的另一种方式.不幸的是, 这并不能正常工作。这个问题让这本书的作者花了20分钟的时间才解决(在写了五章内容之后), 所以他向你发起挑战, 希望你能做得更好！</p>
+<pre><code class="language-rust ignore">use std::collections::HashSet;
+
+struct Difference&lt;'first, 'second&gt; {
+    first_only: Vec&lt;&amp;'first str&gt;,
+    second_only: Vec&lt;&amp;'second str&gt;
+}
+
+fn find_difference&lt;'fst, 'snd&gt;(sentence1: &amp;'fst str, sentence2: &amp;'snd str) -&gt; Difference&lt;'fst, 'snd&gt; {
+    let sentence_1_words: HashSet&lt;&amp;str&gt; = sentence1.split(" ").collect();
+    let sentence_2_words: HashSet&lt;&amp;str&gt; = sentence2.split(" ").collect();
+
+    Difference {
+        first_only: (&amp;sentence_1_words - &amp;sentence_2_words).into_iter().collect(),
+        second_only: (&amp;sentence_2_words - &amp;sentence_1_words).into_iter().collect(),
+    }
+
+}
+
+fn main() {
+    let first_sentence = String::from("I love the surf and the sand.");
+    let second_sentence = String::from("I hate the surf and the sand.");
+
+    let first_only = {
+        let third_sentence = String::from("I hate the snow and the sand.");
+        let diff = find_difference(&amp;first_sentence, &amp;third_sentence);
+        diff.first_only
+    };
+
+    assert_eq!(first_only, vec!["hate", "surf"]);
+
+    let second_only = {
+        let third_sentence = String::from("I hate the snow and the sand.");
+        let diff = find_difference(&amp;third_sentence, &amp;second_sentence);
+        diff.second_only
+    };
+
+    assert_eq!(second_only, vec!["snow"]);
+}</code></pre>
+<p>有关此问题的更多信息, 请阅读<a href="https://github.com/rust-lang/rust/issues/73788">this Rust issue</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="附注-trait对象上的生命周期"><a class="header" href="#附注-trait对象上的生命周期">附注: <code>trait</code>对象上的生命周期</a></h1>
+<ul>
+<li><a href="https://doc.rust-lang.org/reference/types/trait-object.html#trait-object-lifetime-bounds">Trait objects</a>, <a href="https://rustwiki.org/zh-CN/reference/types/trait-object.html">trait对象</a></li>
+<li><a href="https://doc.rust-lang.org/reference/trait-bounds.html">Trait and lifetime bounds</a>, <a href="https://rustwiki.org/zh-CN/reference/trait-bounds.html">trait对象生命周期</a></li>
+</ul>
+<p>在第7章中, 我们讨论了占位符(匿名)生命周期(<code>'_</code>).我们提到有三种使用它们的方式：</p>
+<ul>
+<li>简化<code>impl</code>代码块</li>
+<li>输入/返回 一个需要生命周期的类型时(<code>Rust建议</code>)</li>
+<li>编写包含引用的<code>trait object</code>时</li>
+</ul>
+<p>在第一个情况中, 我们看到匿名生命周期只是简化了我们需要编写的内容.
+在第二种情况下, 我们看到<code>Rust</code>建议我们使用它, 但我们并<em>不必须</em>这样做 -- 生命周期推断会达到我们想要的效果.</p>
+<p>还有一个情况, 看起来生命周期推断应该做我们想要的事情, 但实际上除非在<code>trait</code>对象的情况下使用<code>'_</code>, 否则推断并不起作用.
+本章将详细介绍<code>trait</code>对象和生命周期如何一起工作.</p>
+<p>让我们建立一个简单的例子:</p>
+<pre><pre class="playground"><code class="language-rust">trait Bool {
+    fn truthiness(&amp;self) -&gt; bool;
+}
+
+struct True();
+impl Bool for True {
+    fn truthiness(&amp;self) -&gt; bool {
+        true
+    }
+}
+
+struct False();
+impl Bool for False {
+    fn truthiness(&amp;self) -&gt; bool {
+        false
+    }
+}
+
+fn get_bool(b: bool) -&gt; Box&lt;dyn Bool&gt; {
+    if b == true {
+        Box::new(True())
+    } else {
+        Box::new(False())
+    }
+}
+
+fn main() {
+    let my_bool = true;
+    let my_dyn = get_bool(my_bool);
+
+    println!("{}", my_dyn.truthiness());
+}</code></pre></pre>
+<p>为了明确起见, 我们在这里创建了两个代表<code>true</code>和<code>false</code>的结构体.
+它们都实现了名为<code>Bool</code>的<code>trait</code>, 该<code>trait</code>具有一个<code>truthiness</code>的函数, 该函数返回<code>true</code>或<code>false</code>.</p>
+<p><code>get_bool</code>函数根据传递给它的<code>true</code>或<code>false</code>返回一个包裹<code>Bool</code>的<code>trait</code>对象的<code>Box</code>.</p>
+<p>重要的是要意识到, 由于<code>trait</code>对象可能包含或不包含引用(或者任意数量的引用).
+<strong>所有<code>trait</code>对象都具有生命周期. 即使<code>trait</code>的实现者没有包含引用, 这仍然成立.</strong></p>
+<p>所以, 既然我们需要将生命周期与我们的<code>trait</code>对象关联起来, 我们可能会考虑依赖生命周期推断. 但是生命周期推断如何适用于我们的<code>get_bool</code>函数呢? 由于没有输入引用, 所以我们应该为<code>trait</code>对象指定什么输出生命周期呢? 在这里, 生命周期推断无法帮助我们.</p>
+<p>因此, 在<code>RFC 599</code>和<code>RFC 1156</code>中, <code>trait</code>对象生命周期的规则发生了变化.这些规则相当复杂, 最好进行详细说明.
+<a href="https://doc.rust-lang.org/reference/lifetime-elision.html#default-trait-object-lifetimes">in the reference</a>,
+在<code>get_bool</code>的情况下, 这意味着对于<code>dyn Bool</code>推断的生命周期是<code>'static</code>.</p>
+<p>在让我们稍微改变一下例子, 使结构体包含对布尔值的引用:</p>
+<pre><code class="language-rust ignore">trait Bool {
+    fn truthiness(&amp;self) -&gt; bool;
+}
+
+// CHANGE 1: added &amp;'a bool here
+struct True&lt;'a&gt;(&amp;'a bool);
+impl&lt;'a&gt; Bool for True&lt;'a&gt; {
+    fn truthiness(&amp;self) -&gt; bool {
+        true
+    }
+}
+
+// CHANGE 2: added &amp;'a bool here
+struct False&lt;'a&gt;(&amp;'a bool);
+impl&lt;'a&gt; Bool for False&lt;'a&gt; {
+    fn truthiness(&amp;self) -&gt; bool {
+        false
+    }
+}
+
+fn get_bool(b: &amp;bool) -&gt; Box&lt;dyn Bool&gt; {
+    if *b == true {
+        Box::new(True(b))
+    } else {
+        Box::new(False(b))
+    }
+}
+
+// CHANGE 3: Update the 
+fn main() {
+    let my_dyn = {
+        let my_bool = true;
+        get_bool(&amp;my_bool)
+        // my_bool is dropped here, so the trait object we're returning
+        // has a dangling reference.
+    };
+    println!("{}", my_dyn.truthiness());
+}</code></pre>
+<p>现在, 我们得到一个错误:</p>
+<pre><code class="language-sh">error: lifetime may not live long enough
+  --&gt; src/main.rs:22:5
+   |
+21 |   fn get_bool(b: &amp;bool) -&gt; Box&lt;dyn Bool&gt; {
+   |                  - let's call the lifetime of this reference `'1`
+22 | /     if *b == true {
+23 | |         Box::new(True(b))
+24 | |     } else {
+25 | |         Box::new(False(b))
+26 | |     }
+   | |_____^ returning this value requires that `'1` must outlive `'static`
+   |
+help: to declare that the trait object captures data from argument `b`, you can add an explicit `'_` lifetime bound
+   |
+21 | fn get_bool(b: &amp;bool) -&gt; Box&lt;dyn Bool + '_&gt; {
+   |                                       ++++
+
+error: could not compile __ due to previous error
+
+</code></pre>
+<p>尽管生命周期推断意味着<code>get_bool</code>应该最终具有这样的签名：<code>fn get_bool&lt;'elided&gt;(b: &amp;'elided bool) -&gt; Box&lt;dyn Bool + 'elided&gt;</code>,
+但实际情况并非如此.由于<code>trait</code>对象的特殊规则, 生命周期实际上是这样的：<code>fn get_bool&lt;'elided&gt;(b: &amp;'elided bool) -&gt; Box&lt;dyn Bool + 'static&gt;</code>, 这个<code>'static</code>约束是不正确的.</p>
+<p>因此, 我们需要<code>'_</code>约束(正如这个错误消息所告诉我们的那样)来告诉<code>Rust</code>它应该使用通用的生命周期推断规则, 而不是特殊的<code>trait</code>对象规则.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="附注-译rust-reference生命周期的省略规则"><a class="header" href="#附注-译rust-reference生命周期的省略规则">附注: 译rust reference生命周期的省略规则</a></h1>
+<p>原文: <a href="https://doc.rust-lang.org/reference/lifetime-elision.html">rust reference</a><br />
+中文: <a href="https://rustwiki.org/zh-CN/reference/lifetime-elision.html">rust reference cn</a></p>
+<p><code>Rust</code>在许多情况下允许省略多个位置的生命周期, 但前提是编译器可以推断出合理的默认选择.</p>
+<h2 id="函数上生命周期省略规则"><a class="header" href="#函数上生命周期省略规则">函数上生命周期省略规则</a></h2>
+<p>为了使常用模式更加符合人体工程学, 在<a href="https://doc.rust-lang.org/reference/types/function-item.html">function item</a>、<a href="https://doc.rust-lang.org/reference/types/function-pointer.html">function pointer</a>和<a href="https://doc.rust-lang.org/reference/types/closure.html">closure trait</a>的签名中可以省略生命周期参数.
+以下规则用于推断出被省略的生命周期参数. 无法推断出省略的生命周期参数将导致错误. 占位符(匿名)生命周期<code>'_</code>也可以用于以相同的方式推断生命周期.
+对于路径中的生命周期, 首选使用<code>'_</code>. <code>trait</code>对象的生命周期遵循不同的规则, 将在<a href="chapter_11.html#%E9%BB%98%E8%AE%A4%60trait%60%E5%AF%B9%E8%B1%A1%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F">默认<code>trait</code>对象生命周期</a>进行讨论.</p>
+<ul>
+<li>参数中省略的每个生命周期类型参数都会(被推断)有各自独立的生命周期类型。</li>
+<li>如果所有输入引用上有且只有一个生命周期, 则将该生命周期作为<em>所有</em>省略的输出生命周期的类型参数.</li>
+</ul>
+<p>在方法签名中, 还有另一个规则:</p>
+<ul>
+<li>如果接收者具有类型<code>&amp;Self</code>或<code>&amp;mut Self</code>，则借用的<code>self</code>的生命周期作为所有省略输出生命周期的的类型参数.</li>
+</ul>
+<p>例:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait T {}
+</span><span class="boring">trait ToCStr {}
+</span><span class="boring">struct Thing&lt;'a&gt; {f: &amp;'a i32}
+</span><span class="boring">struct Command;
+</span><span class="boring">
+</span><span class="boring">trait Example {
+</span>fn print1(s: &amp;str);                                   // elided
+fn print2(s: &amp;'_ str);                                // also elided
+fn print3&lt;'a&gt;(s: &amp;'a str);                            // expanded
+
+fn debug1(lvl: usize, s: &amp;str);                       // elided
+fn debug2&lt;'a&gt;(lvl: usize, s: &amp;'a str);                // expanded
+
+fn substr1(s: &amp;str, until: usize) -&gt; &amp;str;            // elided
+fn substr2&lt;'a&gt;(s: &amp;'a str, until: usize) -&gt; &amp;'a str;  // expanded
+
+fn get_mut1(&amp;mut self) -&gt; &amp;mut dyn T;                 // elided
+fn get_mut2&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut dyn T;       // expanded
+
+fn args1&lt;T: ToCStr&gt;(&amp;mut self, args: &amp;[T]) -&gt; &amp;mut Command;                  // elided
+fn args2&lt;'a, 'b, T: ToCStr&gt;(&amp;'a mut self, args: &amp;'b [T]) -&gt; &amp;'a mut Command; // expanded
+
+fn new1(buf: &amp;mut [u8]) -&gt; Thing&lt;'_&gt;;                 // elided - preferred
+fn new2(buf: &amp;mut [u8]) -&gt; Thing;                     // elided
+fn new3&lt;'a&gt;(buf: &amp;'a mut [u8]) -&gt; Thing&lt;'a&gt;;          // expanded
+<span class="boring">}
+</span>
+type FunPtr1 = fn(&amp;str) -&gt; &amp;str;                      // elided
+type FunPtr2 = for&lt;'a&gt; fn(&amp;'a str) -&gt; &amp;'a str;        // expanded
+
+type FunTrait1 = dyn Fn(&amp;str) -&gt; &amp;str;                // elided
+type FunTrait2 = dyn for&lt;'a&gt; Fn(&amp;'a str) -&gt; &amp;'a str;  // expanded
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// The following examples show situations where it is not allowed to elide the
+// lifetime parameter.
+
+<span class="boring">trait Example {
+</span>// Cannot infer, because there are no parameters to infer from.
+fn get_str() -&gt; &amp;str;                                 // ILLEGAL
+
+// Cannot infer, ambiguous if it is borrowed from the first or second parameter.
+fn frob(s: &amp;str, t: &amp;str) -&gt; &amp;str;                    // ILLEGAL
+<span class="boring">}
+</span><span class="boring">}</span></code></pre></pre>
+<h2 id="默认trait对象生命周期"><a class="header" href="#默认trait对象生命周期">默认<code>trait</code>对象生命周期</a></h2>
+<p><a href="https://doc.rust-lang.org/reference/types/trait-object.html">trait object</a>所持有引用的假定的生命周期称为其默认对象生命周期约束. 它们定义在<a href="https://github.com/rust-lang/rfcs/blob/master/text/0599-default-object-bound.md">RFC 599</a>和修订的<a href="https://github.com/rust-lang/rfcs/blob/master/text/1156-adjust-default-object-bounds.md">RFC 1156</a>.</p>
+<p>这些默认的对象生命周期约束是在完全省略生命周期的参数时使用的, 而不是根据上面定义的生命周期通用的省略规则.
+但是如果使用<code>'_</code>作为生命周期约束, 那么将遵循上面通用的省略规则</p>
+<p>如果将<code>trait</code>对象用作泛型的类型参数, 则首先使用其包含类型来推断约束.</p>
+<ul>
+<li>如果包含的类型有唯一的约束, 那么该约束就是默认的约束.</li>
+<li>如果包含的类型有多个约束, 那么必须指定一个显式的约束.</li>
+</ul>
+<p>如果以上规则都不适用, 那么将使用<code>trait</code>的生命周期约束：</p>
+<ul>
+<li>如果<code>trait</code>使用单一生命周期<code>_bound_</code>进行定义, 则使用该约束.</li>
+<li>如果在任何生命周期约束中使用了<code>'static</code>, 则使用<code>'static</code>.</li>
+<li>如果<code>trait</code>没有生命周期约束, 则在表达式中推断生命周期, 并在表达式外部使用<code>'static</code>.</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// For the following trait...
+trait Foo { }
+
+// These two are the same because Box&lt;T&gt; has no lifetime bound on T
+type T1 = Box&lt;dyn Foo&gt;;
+type T2 = Box&lt;dyn Foo + 'static&gt;;
+
+// ...and so are these:
+impl dyn Foo {}
+impl dyn Foo + 'static {}
+
+// ...so are these, because &amp;'a T requires T: 'a
+type T3&lt;'a&gt; = &amp;'a dyn Foo;
+type T4&lt;'a&gt; = &amp;'a (dyn Foo + 'a);
+
+// std::cell::Ref&lt;'a, T&gt; also requires T: 'a, so these are the same
+type T5&lt;'a&gt; = std::cell::Ref&lt;'a, dyn Foo&gt;;
+type T6&lt;'a&gt; = std::cell::Ref&lt;'a, dyn Foo + 'a&gt;;
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// This is an example of an error.
+<span class="boring">trait Foo { }
+</span>struct TwoBounds&lt;'a, 'b, T: ?Sized + 'a + 'b&gt; {
+    f1: &amp;'a i32,
+    f2: &amp;'b i32,
+    f3: T,
+}
+type T7&lt;'a, 'b&gt; = TwoBounds&lt;'a, 'b, dyn Foo&gt;;
+//                                  ^^^^^^^
+// Error: the lifetime bound for this object type cannot be deduced from context
+<span class="boring">}</span></code></pre></pre>
+<p>请注意, 最内层的对象确定了生命周期约束, 因此<code>&amp;'a Box&lt;dyn Foo&gt;</code>仍然等同于<code>&amp;'a Box&lt;dyn Foo + 'static&gt;</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// For the following trait...
+trait Bar&lt;'a&gt;: 'a { }
+
+// ...these two are the same:
+type T1&lt;'a&gt; = Box&lt;dyn Bar&lt;'a&gt;&gt;;
+type T2&lt;'a&gt; = Box&lt;dyn Bar&lt;'a&gt; + 'a&gt;;
+
+// ...and so are these:
+impl&lt;'a&gt; dyn Bar&lt;'a&gt; {}
+impl&lt;'a&gt; dyn Bar&lt;'a&gt; + 'a {}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="static生命周期"><a class="header" href="#static生命周期"><code>'static</code>生命周期</a></h2>
+<p>除非指定明确的生命周期, 否则引用类型的常数和静态声明都具有隐式的<code>'static</code>生命周期.因此, 涉及上面<code>'static</code>的声明可以在没有标注生命周期.</p>
+<pre><pre class="playground"><code class="language-rust">#![allow(unused)]
+fn main() {
+// STRING: &amp;'static str
+const STRING: &amp;str = "bitstring";
+
+struct BitsNStrings&lt;'a&gt; {
+    mybits: [u32; 2],
+    mystring: &amp;'a str,
+}
+
+// BITS_N_STRINGS: BitsNStrings&lt;'static&gt;
+const BITS_N_STRINGS: BitsNStrings&lt;'_&gt; = BitsNStrings {
+    mybits: [1, 2],
+    mystring: STRING,
+};
+}</code></pre></pre>
+<p>请注意, 如果<code>static</code>或<code>const</code>项包含函数或闭包引用, 本身包含引用, 则编译器将首先尝试标准省略规则.如果它无法通过其常用的规则来解决生命周期, 那么它将出错.例如：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct Foo;
+</span><span class="boring">struct Bar;
+</span><span class="boring">struct Baz;
+</span><span class="boring">fn somefunc(a: &amp;Foo, b: &amp;Bar, c: &amp;Baz) -&gt; usize {42}
+</span>// Resolved as `fn&lt;'a&gt;(&amp;'a str) -&gt; &amp;'a str`.
+const RESOLVED_SINGLE: fn(&amp;str) -&gt; &amp;str = |x| x;
+
+// Resolved as `Fn&lt;'a, 'b, 'c&gt;(&amp;'a Foo, &amp;'b Bar, &amp;'c Baz) -&gt; usize`.
+const RESOLVED_MULTIPLE: &amp;dyn Fn(&amp;Foo, &amp;Bar, &amp;Baz) -&gt; usize = &amp;somefunc;
+}</code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct Foo;
+</span><span class="boring">struct Bar;
+</span><span class="boring">struct Baz;
+</span><span class="boring">fn somefunc&lt;'a,'b&gt;(a: &amp;'a Foo, b: &amp;'b Bar) -&gt; &amp;'a Baz {unimplemented!()}
+</span>// There is insufficient information to bound the return reference lifetime
+// relative to the argument lifetimes, so this is an error.
+const RESOLVED_STATIC: &amp;dyn Fn(&amp;Foo, &amp;Bar) -&gt; &amp;Baz = &amp;somefunc;
+//                                            ^
+// this function's return type contains a borrowed value, but the signature
+// does not say whether it is borrowed from argument 1 or argument 2
+}</code></pre></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="附注-reborrow"><a class="header" href="#附注-reborrow">附注: reborrow</a></h1>
+<p>对于每个类型<code>T</code>, 有两种类型的引用<a href="https://doc.rust-lang.org/std/primitive.reference.html">Primitive Type reference</a>:</p>
+<ul>
+<li><code>&amp;T</code>: <code>T</code>的共享引用(通常称为共享借用). 您可以拥有任意数量的共享引用, 但它们不允许您修改它们引用的数据.</li>
+<li><code>&amp;mut T</code>: <code>T</code>的可变引用(通常称为独占借用). 您同时只能拥有一个可变引用, 但它们允许您修改它们引用的数据.</li>
+</ul>
+<p>而<code>&amp;T</code>实现了<code>Copy</code>, <code>&amp;mut T</code>没有实现<code>Copy</code>.</p>
+<p><code>Rust</code>对<code>reborrow</code>还没有更好的文档, 更多详情参阅:</p>
+<ul>
+<li><a href="https://github.com/rust-lang/reference/issues/788">reborrow issue</a></li>
+<li><a href="https://users.rust-lang.org/t/unifying-borrow-and-reborrow-conceptually-via-access/66065">Unifying borrow and reborrow via access</a></li>
+</ul>
+<h2 id="练习1-reborrow"><a class="header" href="#练习1-reborrow">练习1: reborrow</a></h2>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {
+    let mut i = 42;
+    let x = &amp;mut i;
+    // move and reborrow
+    // let y = x; // value moved here, will cause error
+    let y: &amp;mut i32 = x; // reborrow, same as let y: &amp;mut i32 = &amp;mut *x;
+    *y = 44;
+    println!("y = {}", *y);
+    *x = 45;
+    println!("x = {}", *x);
+}</code></pre></pre>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let mut i = 42;
+    let x = &amp;mut i;
+    // reborrow, not moved, same as change_i(&amp;mut *x);
+    change_i(x);
+    println!("i = {}",*x);
+    *x = 45;
+    println!("i = {}",*x);
+}
+fn change_i(i: &amp;mut i32) {
+    *i = 44;
+}</code></pre></pre>
+<h2 id="练习-引用的引用-来自cheats-memory-lifetimes"><a class="header" href="#练习-引用的引用-来自cheats-memory-lifetimes">练习: 引用的引用, 来自<a href="https://cheats.rs/#memory-lifetimes">cheats: memory lifetimes</a></a></h2>
+<p><strong>NOTE: 对<code>&amp;'b &amp;'a S</code>, 可以把<code>&amp;'a S</code>看成<code>T</code>(<code>&amp;'a S = T</code>), 则有<code>&amp;'b T</code>且有<code>T: 'b</code>约束, 则推理得出<code>'a: 'b</code>.</strong>
+<strong>NOTE: <code>'a: 'b</code>约束表明<code>'a</code>生命周期比<code>'b</code>要长.</strong></p>
+<h3 id="分析下面返回一个短生命周期b的不可变引用"><a class="header" href="#分析下面返回一个短生命周期b的不可变引用">分析下面返回一个短生命周期(<code>'b</code>)的不可变引用</a></h3>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {}
+
+// Return short('b') reference
+
+struct S;
+
+fn f1&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a S) -&gt; &amp;'b S {
+    *rb
+}
+
+fn f2&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a mut S) -&gt; &amp;'b S {
+    *rb
+}
+
+fn f3&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a S) -&gt; &amp;'b S {
+    *rb
+}
+
+fn f4&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a mut S) -&gt; &amp;'b S {
+    *rb
+}</code></pre></pre>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f1</code>, <code>&amp;'b &amp;'a S</code>有<code>'a: 'b</code>约束, <code>*rb</code>是从<code>&amp;'b &amp;'a S</code>解引用得到<code>&amp;'c S</code>则有<code>'c: 'b</code>约束, 但是因为<code>&amp;T</code>是可<code>Copy</code>的, 返回不可变引用是没有问题的, 可以编译通过.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f2</code>, <code>&amp;'b &amp;'a mut S</code>有<code>'a: 'b</code>约束, <code>*rb</code>是从<code>&amp;'b &amp;'a mut S</code>解引用得到<code>&amp;'c mut S</code>则有<code>'c: 'b</code>约束, 因为<code>'c: 'b</code>, 返回值的生命周期是符合条件的, 所以一个可变的引用转成不可变引用是可以, 所以这里是能编译通过的.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f3</code>, 和<code>f1</code>不同的是<code>*rb</code>从<code>&amp;'b mut &amp;'a S</code>解引用得到<code>&amp;'c S</code>(涉及到<code>reborrow</code>), 因为<code>&amp;T</code>是可<code>Copy</code>的, 所以这里是能编译通过的.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f4</code>, 和<code>f2</code>不同的是<code>*rb</code>从<code>&amp;'b mut &amp;'a mut S</code>解引用得到<code>&amp;'c mut S</code>(涉及到<code>reborrow</code>), 生命周期也符合条件, 所以这里是能编译通过的.</li>
+</ul>
+<h3 id="分析下面返回一个短生命周期b的可变引用"><a class="header" href="#分析下面返回一个短生命周期b的可变引用">分析下面返回一个短生命周期(<code>'b</code>)的可变引用</a></h3>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {}
+
+// Return short('b') mutable reference
+
+struct S;
+
+
+fn f1&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a S) -&gt; &amp;'b mut S {
+    *rb
+}
+
+fn f2&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a mut S) -&gt; &amp;'b mut S {
+    *rb
+}
+
+fn f3&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a S) -&gt; &amp;'b mut S {
+    *rb
+}
+
+fn f4&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a mut S) -&gt; &amp;'b S {
+    *rb
+}</code></pre></pre>
+<ul>
+<li>看下<code>f1</code>, 不可变引用是不能转为可变引用, 所以编译不通过.</li>
+<li>看下<code>f2</code>, 同<code>f1</code>, 因为<code>rb</code>是不可变引用不能将<code>*rb</code>解引用成可变引用, 所以编译不通过.</li>
+<li>看下<code>f3</code>, 同<code>f1</code>, 因为<code>rb</code>是可变引用,<code>*rb</code>解引用成不可变引用, 再从不可变引用转换成可变引用是不合法的, 所以编译不通过</li>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f4</code>, 可变引用的可变引用, 返回一个可变引用, 这是合法的, 现在就看生命周期是否符合要求, 生命周期推理可以看上一题<code>f1</code>的推理, <code>f4</code>是可以编译通过的</li>
+</ul>
+<h3 id="分析下面返回一个长生命周期a的不可变引用"><a class="header" href="#分析下面返回一个长生命周期a的不可变引用">分析下面返回一个长生命周期(<code>'a</code>)的不可变引用</a></h3>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {}
+
+// Return long('a') reference
+
+struct S;
+
+fn f1&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a S) -&gt; &amp;'a S {
+    *rb
+}
+
+fn f2&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a mut S) -&gt; &amp;'a S {
+    *rb
+}
+
+fn f3&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a S) -&gt; &amp;'a S {
+    *rb
+}
+
+fn f4&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a mut S) -&gt; &amp;'a S {
+    *rb
+}</code></pre></pre>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+看下<code>f1</code>, <code>&amp;'b &amp;'a S</code>有<code>'a: 'b</code>约束, <code>*rb</code>是从<code>&amp;'b &amp;'a S</code>解引用得到<code>&amp;'c S</code>则有<code>'c: 'b</code>约束, 但是因为<code>&amp;T</code>是可<code>Copy</code>的, 返回不可变引用是没有问题的.</li>
+<li>看下<code>f2</code>, <code>&amp;'b &amp;'a mut S</code>有<code>'a: 'b</code>,<code>*rb</code>解引用得到<code>&amp;'c mut S</code>则有<code>'c: 'b</code>约束, 由于<code>&amp;mut T</code>是<strong>没有实现</strong><code>copy</code>的,且<code>'a</code>和<code>'c</code>无法确定关系, 所有<code>&amp;'c mut S</code> 是无法转换成<code>&amp;'a S</code>.</li>
+<li>看下<code>f3</code>, <code>&amp;'b mut &amp;'a S</code>有<code>'a: 'b</code>,<code>*rb</code>解引用得到<code>&amp;'c S</code>则有<code>'c: 'b</code>约束, 由于<code>&amp;T</code>是<strong>实现</strong><code>copy</code>的, 所以 <code>&amp;'c S</code> 转成<code>&amp;'a S</code>是没有问题的.</li>
+<li>看下<code>f4</code>, <code>&amp;'b mut &amp;'a mut S</code>有<code>'a: 'b</code>,<code>*rb</code>解引用得到<code>&amp;'c mut S</code>则有<code>'c: 'b</code>约束,由于<code>&amp;mut T</code>是<strong>没有实现</strong><code>copy</code>的, 且<code>'a</code>和<code>'c</code>无法确定关系, 所有<code>&amp;'c mut S</code> 是无法转换成<code>&amp;'a mut S</code>.</li>
+</ul>
+<h3 id="分析下面返回一个长生命周期a的可变引用"><a class="header" href="#分析下面返回一个长生命周期a的可变引用">分析下面返回一个长生命周期(<code>'a</code>)的可变引用</a></h3>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {}
+
+// Return long('a') mutable reference
+
+struct S;
+
+fn f1&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a S) -&gt; &amp;'a mut S {
+    *rb
+}
+
+fn f2&lt;'b, 'a&gt;(rb: &amp;'b &amp;'a mut S) -&gt; &amp;'a mut S {
+    *rb
+}
+
+fn f3&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a S) -&gt; &amp;'a mut S {
+    *rb
+}
+
+fn f4&lt;'b, 'a&gt;(rb: &amp;'b mut &amp;'a mut S) -&gt; &amp;'a mut S {
+    *rb
+}</code></pre></pre>
+<ul>
+<li>看下<code>f1</code>, 不可变引用是不能转为可变引用, 所以编译不通过.</li>
+<li>看下<code>f2</code>, 同<code>f1</code>, 因为<code>rb</code>是不可变引用不能将<code>*rb</code>解引用成可变引用, 所以编译不通过.</li>
+<li>看下<code>f3</code>, 同<code>f1</code>, 因为<code>rb</code>是可变引用,<code>*rb</code>解引用成不可变引用, 再从不可变引用转换成可变引用是不合法的, 所以编译不通过</li>
+<li>看下<code>f4</code>, <code>&amp;'b mut &amp;'a mut S</code>有<code>'a: 'b</code>,<code>*rb</code>解引用得到<code>&amp;'c mut S</code>则有<code>'c: 'b</code>约束, 因为<code>'a</code>和<code>'c</code>无法确定关系, <code>&amp;'c mut S</code>是无法转换成<code>&amp;'a mut S</code>, 所以编译不通过</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="impl-trait生命周期省略规则规则"><a class="header" href="#impl-trait生命周期省略规则规则"><code>impl trait</code>生命周期省略规则规则</a></h1>
+<ul>
+<li><a href="https://github.com/rust-lang/rfcs/blob/master/text/1951-expand-impl-trait.md">RFC 1591</a><code>impl trait</code>生命周期, <code>impl trait</code> 作为返回值, 只捕获类型参数, 不捕获参数生命周期</li>
+<li><a href="https://github.com/rust-lang/rfcs/blob/master/text/2394-async_await.md">RFC 2394</a><code>async fn return impl Future</code>, 不同与手写 <code>impl trait</code>, <code>async fn</code> 会返回匿名 <code>impl Future + 参数生命周期</code></li>
+</ul>
+<h2 id="impl-trait生命周期"><a class="header" href="#impl-trait生命周期"><code>impl trait</code>生命周期</a></h2>
+<p><code>impl trait</code> 作为返回值, 只捕获类型参数, 不捕获参数生命周期</p>
+<h3 id="示例1"><a class="header" href="#示例1">示例1</a></h3>
+<p>该示例是否能编译通过?</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Foo {}
+impl Foo for &amp;'_ str {}
+
+fn f1&lt;T: Foo&gt;(t: T) -&gt; Box&lt;impl Foo&gt; {
+    Box::new(t)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>上述示例是可以编译通过的, <code>impl Foo</code>会捕获<code>T</code>, 即使<code>T</code>是个引用, 因为<code>T</code>有指定生命周期, 它们的生命周期是一样的, 所以将会展开如下:</p>
+<p>与<code>trait</code>对象对比, 以下示例与上述唯一不同, 返回的是一个<code>Box&lt;dyn Foo&gt;</code>, 是否可以编译通过?</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Foo {}
+impl Foo for &amp;'_ str {}
+
+fn f2&lt;T: Foo&gt;(t: T) -&gt; Box&lt;dyn Foo&gt; {
+    Box::new(t)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>上述示例是编译不通过的, 为什么? <code>trait</code>对象有一套自己的规则, 编译器展开后如下:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Foo {}
+impl Foo for &amp;'_ str {}
+
+fn f2&lt;T: Foo&gt;(t: T) -&gt; Box&lt;dyn Foo + 'static&gt; {
+    Box::new(t)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>对于<code>T</code>不仅有可能是所有权类型, 也有可能是不可变引用或可变引用, 这些引用传进来时, 就包含自己的生命周期.
+生命周期不匹配, 所以编译不能通过.</p>
+<p>我们相以增加<code>'_</code>让<code>trait</code>使用通用的生命周期省略规则, 或约束<code>T</code>为<code>'static</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Foo {}
+impl Foo for &amp;'_ str {}
+
+fn f2&lt;'a, T: Foo + 'a&gt;(t: T) -&gt; Box&lt;dyn Foo + 'a&gt; {
+    Box::new(t)
+}
+
+// or
+
+fn ff2&lt;T: Foo + 'static&gt;(t: T) -&gt; Box&lt;dyn Foo + 'static&gt; {
+    Box::new(t)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>综上, <code>impl trait</code>会捕获<code>T</code>, 如果<code>T</code>有生命周期, 则<code>impl trait</code>将使用这个生命周期.
+而<code>trait</code>对象在没有明确标注下, 拥有自己一套规则, 可以使用<code>'_</code>使用通用的生命周期省略规则或明确标注生命周期.</p>
+<h3 id="示例2"><a class="header" href="#示例2">示例2</a></h3>
+<p>该示例是否能编译通过?</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Foo {}
+impl Foo for &amp;'_ str {}
+
+fn f3(s: &amp;str) -&gt; Box&lt;impl Foo&gt; {
+    Box::new(t)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>以上示例是不可编译通过的, 因为<code>impl trait</code>, 只捕获类型参数, 不捕获参数生命周期, 编译器展开后如下:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// fn f3&lt;'a&gt;(s: &amp;'a str) -&gt; Box&lt;impl Foo + 'a&gt; {
+// fn f3(s: &amp;str) -&gt; Box&lt;impl Foo + '_&gt; {
+fn f3&lt;'a&gt;(s: &amp;'a str) -&gt; Box&lt;impl Foo&gt; {
+    Box::new(t)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>我们可以对<code>Box&lt;impl Foo&gt;</code>补充生命周期成这样: <code>fn f3&lt;'a&gt;(s: &amp;'a str) -&gt; Box&lt;impl Foo + 'a&gt;</code>或<code>fn f3(s: &amp;str) -&gt; Box&lt;impl Foo + '_&gt;</code>,这样就可以编译通过了.</p>
+<p>与<code>trait</code>对象对比, 以下示例与上述唯一不同, 返回的是一个<code>Box&lt;dyn Foo&gt;</code>, 是否可以编译通过?</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Foo {}
+impl Foo for &amp;'_ str {}
+
+fn f4(s: &amp;str) -&gt; Box&lt;dyn Foo&gt; {
+    Box::new(t)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>上述示例是编译不通过的, 为什么? <code>trait</code>对象有一套自己的规则, 编译器展开后如下:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Foo {}
+impl Foo for &amp;'_ str {}
+
+fn f4(s: &amp;str) -&gt; Box&lt;dyn Foo + 'static&gt; {
+    Box::new(t)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>我们相以增加<code>'_</code>让<code>trait</code>使用通用的生命周期省略规则, 或约束<code>&amp;str</code>为<code>&amp;'static str</code>.
+即使
+<code>fn f4(s: &amp;str) -&gt; Box&lt;dyn Foo + '_&gt;</code>或<code>fn f4(s: &amp;static str) -&gt; Box&lt;dyn Foo + 'static&gt;</code>.</p>
+<p>综上, <code>impl trait</code>只捕获类型参数, 不捕获参数生命周期, 而<code>trait</code>对象在没有明确标注下, 拥有自己一套规则, 可以使用<code>'_</code>使用通用的生命周期省略规则或明确标注生命周期.</p>
+<h2 id="async-fn-return-impl-future"><a class="header" href="#async-fn-return-impl-future"><code>async fn return impl Future</code></a></h2>
+<p>不同与手写 <code>impl trait</code>, <code>async fn</code> 会返回匿名 <code>impl Future + 参数生命周期</code></p>
+<h3 id="示例3"><a class="header" href="#示例3">示例3</a></h3>
+<pre><pre class="playground"><code class="language-rust editable">
+fn main() {
+    let future;
+    {
+        let s = String::from("any");
+        future = f1(&amp;s);
+        // future = f2(&amp;s);
+    }
+    let another_future = future;
+}
+
+fn f1(s: &amp;str) -&gt; impl Future&lt;Output=()&gt; {
+    async move {
+        //  println!("{}", s)
+        ()
+    }
+}
+async fn f2(s: &amp;str) -&gt; () {
+    ()
+}
+fn f3&lt;'a, 'b&gt;(s1: &amp;str, s2: &amp;str) -&gt; impl Future&lt;Output=() + 'a&gt; {
+    println!("{}", s2)
+    async move {
+        println!("{}", s1)
+        ()
+    }
+}</code></pre></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="附注-hrtb--gat"><a class="header" href="#附注-hrtb--gat">附注: HRTB &amp; GAT</a></h1>
+<ul>
+<li><a href="https://github.com/rust-lang/rfcs/blob/master/text/0387-higher-ranked-trait-bounds.md">RFC 387</a><code>for &lt;'a&gt; ...</code> higher ranked trait bounds</li>
+<li><a href="https://github.com/rust-lang/rfcs/blob/master/text/1598-generic_associated_types.md">RFC 1598</a>generic associated types</li>
+<li><a href="https://sabrinajewson.org/blog/the-better-alternative-to-lifetime-gats">更好理解生命周期GAT</a>的一篇文章</li>
+</ul>
+<h2 id="hrtb-higher-ranked-trait-bounds"><a class="header" href="#hrtb-higher-ranked-trait-bounds">HRTB: higher ranked trait bounds</a></h2>
+<ul>
+<li><code>for &lt;'a'&gt;</code> 表示<code>for any lifetime</code>都会成立</li>
+<li>目前 <code>fn</code>系列默认<code>HRTB</code></li>
+<li>区分生命周期的<code>early bound</code>和<code>late bound</code>.</li>
+</ul>
+<h3 id="示例1-1"><a class="header" href="#示例1-1">示例1</a></h3>
+<p>以下示例是否编译通过?</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {}
+
+fn call_on_ref_zero&lt;'a, F&gt;(f: F) 
+where
+    F: Fn(&amp;'a i32),
+{
+    let zero = 0;
+    f(&amp;zero);
+}</code></pre></pre>
+<p>上述示例是无法编译通过的, 这里的<code>'a</code>约束是在调用该函数就已经定下来了, <code>'a</code>的生命周期一般都要比函数要长,
+但是我们的<code>zero</code>是在函数里的, <code>Rust</code>提出了<code>HRTB</code>, 我们可以改成如下</p>
+<pre><pre class="playground"><code class="language-rust editable">fn main() {}
+
+fn call_on_ref_zero&lt;F&gt;(f: F) 
+where
+    F: for&lt;'a&gt; Fn(&amp;'a i32),
+    // F: Fn(&amp;i32)
+{
+    let zero = 0;
+    f(&amp;zero);
+}</code></pre></pre>
+<p><code>F: for&lt;'a&gt; Fn(&amp;'a i32)</code>的意思是对于任意的<code>'a</code>, 在<code>F</code>里面, 都是满足要求的, <code>Fn</code>可以接受任意<code>'a</code>参数,
+由于<code>fn</code>系列默认都是<code>HRTB</code>, 所以我们可以省略成<code>F: Fn(&amp;i32)</code>.</p>
+<h3 id="示例2-1"><a class="header" href="#示例2-1">示例2</a></h3>
+<pre><pre class="playground"><code class="language-rust">fn f&lt;'a&gt;() {}
+fn g&lt;'a: 'a&gt;() {}
+
+fn main() {
+    let ff = f::&lt;'static'&gt; as fn(); // let ff = f as fn();
+    let gg = g::&lt;'static'&gt; as fn();
+}</code></pre></pre>
+<p><code>fn f&lt;'a&gt;() {}</code>属于<code>late bound</code>的一种情况, 只有在调用<code>f</code>时才会决定<code>'a</code>的生命周期.
+<code>fn g&lt;'a: 'a&gt;() {}</code>是<code>early bound</code>的一种情况, 在传递时就要确定<code>'a</code>. 在<code>where</code>语句,<code>impl</code>的<code>self</code>都属于<code>early bound</code>.</p>
+<p><code>early bound</code>: 在传递时就确定了约束
+<code>late bound</code>: 在调用时才确定约束</p>
+<h2 id="generic-associated-types"><a class="header" href="#generic-associated-types">generic associated types</a></h2>
+<p><code>associated type</code>中可以增加类型参数, 当然也可以是生命周期, 更多详情可以参考<a href="https://github.com/rust-lang/rfcs/blob/master/text/1598-generic_associated_types.md">RFC 1598</a>和<a href="https://sabrinajewson.org/blog/the-better-alternative-to-lifetime-gats">更好理解生命周期GAT</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="统一访问借用和重借用"><a class="header" href="#统一访问借用和重借用">统一访问借用和重借用</a></h1>
+<p>原文: <a href="https://users.rust-lang.org/t/unifying-borrow-and-reborrow-conceptually-via-access/66065">Unifying borrow and reborrow via access</a></p>
+<ul>
+<li><a href="https://github.com/rust-lang/reference/issues/788">reborrow issue</a></li>
+<li><a href="https://cheats.rs/#memory-lifetimes">cheats: memory lifetimes</a></li>
+</ul>
+<p><code>Reborrow</code>作为<code>Rust</code>类型系统的一个特性, 常常被认为是"编译器的魔法", <a href="https://github.com/rust-lang/reference/issues/788">文档不全</a>. 但在<code>Rust</code>的整个所有权和借用逻辑中却扮演着非常重要的角色. 因此, 这篇简短的教程将通过一个统一的概念: 对访问权限的操作, 讲述我对<code>reborrow</code>和<code>borrow</code>的理解.</p>
+<p>首先, 我想说明为什么<code>Rust</code>的借用规则不能很好地解释<code>reborrow</code>. 请看下面的程序:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut i = 1; // forget i32 being copyable for a moment
+let m1 = &amp;mut i;
+let m2 = &amp;mut *m1;
+*m2 = 2;
+*m1 = 3;
+<span class="boring">}</span></code></pre></pre>
+<p>上述代码可以编译, 但当我们赋值给<code>m2</code>时, 尽管<code>m1</code>和<code>m2</code>都借用了<code>i</code>, 它们仍然没有完全脱离作用域.</p>
+<p>当然, 如果我们考虑到NLL的非连续生命周期, 这种行为就不会违反"只有一个可变借用"原则: 在<code>*m2 = 2</code>行之前和之后<code>m1</code>都是活的, 但在这一行中, <code>m1</code>却不是. 但这种简单的解释并不能说明为什么交换两个赋值会导致类型错误. 为了涵盖这种行为, 我们还需要一条额外的规则, 即两个可变借用的生命周期不得"重叠". 我们要求其中一个借用的作用域包含在另一个借用的作用域中.</p>
+<p>不过, 上述规则并不能完全说明一切. 如果我们将<code>m2</code>定义为<code>&amp;mut i</code>, 即直接借用<code>i</code>而不是借用<code>m1</code>, 上述代码将无法编译. 这一次, 我们必须添加<code>reborrow</code>规则.</p>
+<p>既然我们已经解释了上面的所有行为, 那么就我个人而言, 这种解释绝不令人满意. 无重叠"规则和借用规则似乎是人为的, 这可能是造成借用给人"编译器魔法"印象的原因. <code>Rust</code>的类型系统非常复杂, 不可避免地会有魔法存在. 但如果在这种特殊情况下有更好的解释呢? 这就是我要在下文中提出的: 通过"访问"的概念, 对借用和再借用提出一种(不知道是否新颖)统一的看法.</p>
+<p>虽然这不是一个官方术语, 但访问的概念在<code>Rust</code>中以一种非常明显的方式出现(假设<code>T</code>是一个非复制类型):</p>
+<ul>
+<li><code>T</code>类型的值对持有<code>T</code>拥有所有权和(= read + write + deallocate)访问权限.</li>
+<li><code>&amp;mut T</code>类型的值对持有<code>T</code>具有(唯一的)可变借用(= read + write)访问地址的权限.</li>
+<li><code>&amp;T</code>类型的值对持有<code>T</code>具有(共享的)不可变借用(= read)访问地址的权限.</li>
+</ul>
+<p>我们可以用访问的语言来重新表述借用的过程. 当我们从所有者处借用时, 我们实际上是在借用对所有者地址的访问权限, 可以是可变的, 也可以是不可变的. 当所有者被移动、分配或杀死时, 它的任何借用都不能存活, 因为我们需要收回所有者的访问权限才能执行这些操作.</p>
+<p>那么<code>reborrow</code>呢? 从访问权限的角度来看, <code>reborrow</code>只不过是对非所有者访问权限的操作而已. 让我们通过一个简单的案例分析来说明这一点:</p>
+<ul>
+<li>可变的重借用一个可变借用: 被借用者持有从别处借来的某个地址的<code>read-write</code>权限, 现在我们暂时拿走该权限, 并将其传给借用者</li>
+<li>不变地重借用一个可变借用: 与上述情况类似, 但我们不是将借用的读写权限直接传递下去, 而是将其转换成许多读取权限.</li>
+<li>重借用一个不变的借用: 类似</li>
+</ul>
+<p>因此, 从访问的角度来看，借用和重借用本质上是同一回事: 操纵和借用访问权限。为了统一借用和重借用，我们只需要对著名的"一个可变或多个不变"规则进行一些修改: 我们将其推广到访问借用图, 如下:</p>
+<p><img src="https://global.discourse-cdn.com/business5/uploads/rust_lang/original/3X/0/8/084028dedf986cb14cd26af0ff71874f5bb8b8ca.png" alt="ownership" /></p>
+<p>箭头表示借用和操作访问权限的有效方向, "所有者"一栏缺少一个自循环箭头, 因为<code>Rust</code>要求内存管理的所有权是唯一的, 也就是说, 去分配访问权限不能被借用.
+现在, 让我们用访问语言来重新表述 <code>Rust</code> 的原理:</p>
+<ul>
+<li>如上图所示, 值的存取可以是借用的.</li>
+<li>当一个值被移动、赋值或退出作用域时, 它必须收回其所有访问权限</li>
+</ul>
+<p>让我们运用这些重新表述的原则, 看看它是否能很好地解释本篇文章开头的例子:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut i = 1; // forget i32 being copyable for a moment
+let m1 = &amp;mut i; // m1 borrows its access from i
+let m2 = &amp;mut *m1; // m2 (re)borrows its access from m1
+*m2 = 2; // m2 using its access for writing
+*m1 = 3; // We are assigning to m1 here, so m1 must take back its access.
+         // Hence m2 must drop out of scope here.
+// Now m1 is still usable, but m2 is not
+<span class="boring">}</span></code></pre></pre>
+<p>如果我们交换这两个赋值:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut i = 1; // forget i32 being copyable for a moment
+let m1 = &amp;mut i; // m1 borrows its access from i
+let m2 = &amp;mut *m1; // m2 (re)borrows its access from m1
+*m1 = 3; // We are assigning to m1 here, so m1 must take back its access.
+         // Hence m2 must drop out of scope here.
+*m2 = 2; // Now m2 already drops out of scope, type error!
+<span class="boring">}</span></code></pre></pre>
+<p>如果我们设置<code>m2 = &amp;mut i</code>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut i = 1; // forget i32 being copyable for a moment
+let m1 = &amp;mut i; // m1 borrows its access from i
+let m2 = &amp;mut i; // m2 borrows from i directly
+                 // To afford this new borrow, i must take its access back
+                 // Hence m1 must drop out of scope
+*m2 = 2; // m2 using its access for writing
+*m1 = 3; // m1 already drops out of scope, type error!
+<span class="boring">}</span></code></pre></pre>
+<p>耶, 新的原则完美运行! 最后, 如果你知道用于测试不安全代码的<a href="https://www.ralfj.de/blog/2018/08/07/stacked-borrows.html#:~:text=Stacked%20Borrows%3A%20An%20Aliasing%20Model%20For%20Rust%20In,when%20to%20perform%20which%20kinds%20of%20memory%20accesses."><code>stacked borrow</code></a>模型, 上面的访问解释也可以推导出堆叠借用的原理.  假设我们有一个可变(再)借用链:</p>
+<p><code>owner -&gt; m1 -&gt; m2 -&gt; ... -&gt; mn</code></p>
+<p>如果我们现在赋值给<code>m1</code>, <code>m1</code>必须从<code>m2</code>处收回它的访问权. 因此, <code>m2</code>必须退出作用域, 但这又要求<code>m2</code>收回它的访问权. 最终, 从<code>m2</code>到<code>mn</code>的所有内容都必须被回收, 或者在堆栈借用模型中被"弹出堆栈", 以便分配给<code>m1</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="章节16-附注-译rfc-599默认对象生命周期约束"><a class="header" href="#章节16-附注-译rfc-599默认对象生命周期约束">章节16: 附注: 译RFC 599默认对象生命周期约束</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="章节17-附注-译rfc-1156调整默认对象生命周期约束"><a class="header" href="#章节17-附注-译rfc-1156调整默认对象生命周期约束">章节17: 附注: 译RFC 1156调整默认对象生命周期约束</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="章节18-附注-译rfc-1951扩展impl-trait"><a class="header" href="#章节18-附注-译rfc-1951扩展impl-trait">章节18: 附注: 译RFC 1951扩展impl trait</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="章节19-附注-译rfc-2394async-await"><a class="header" href="#章节19-附注-译rfc-2394async-await">章节19: 附注: 译RFC 2394async await</a></h1>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>

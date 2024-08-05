@@ -1,0 +1,316 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>章节5: 类型上的生命周期 - LifetimeKata</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html">前言</a></li><li class="chapter-item expanded "><a href="chapter_0.html">章节0: 回顾</a></li><li class="chapter-item expanded "><a href="chapter_1.html">章节1: 生命周期的必要性</a></li><li class="chapter-item expanded "><a href="chapter_2.html">章节2: 生命周期的解释</a></li><li class="chapter-item expanded "><a href="chapter_3.html">章节3: 生命周期的省略规则</a></li><li class="chapter-item expanded "><a href="chapter_4.html">章节4: 可变引用和容器</a></li><li class="chapter-item expanded "><a href="chapter_5.html" class="active">章节5: 类型上的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_6.html">章节6: impl上的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_7.html">章节7: 特殊的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_8.html">章节8: 终章</a></li><li class="chapter-item expanded "><a href="chapter_9.html">章节9: 延伸阅读</a></li><li class="chapter-item expanded "><a href="chapter_10.html">章节10: 附注: trait生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_11.html">章节11: 附注: 译rust reference生命周期的省略规则</a></li><li class="chapter-item expanded "><a href="chapter_12.html">章节12: 附注: reborrow</a></li><li class="chapter-item expanded "><a href="chapter_13.html">章节13: 附注: impl trait的生命周期</a></li><li class="chapter-item expanded "><a href="chapter_14.html">章节14: 附注: HRTB & GAT</a></li><li class="chapter-item expanded "><a href="chapter_15.html">章节15: 附注: 统一访问借用和重借用</a></li><li class="chapter-item expanded "><a href="chapter_16.html">章节16: 附注: 译RFC 599默认对象生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_17.html">章节17: 附注: 译RFC 1156调整默认对象生命周期约束</a></li><li class="chapter-item expanded "><a href="chapter_18.html">章节18: 附注: 译RFC 1951扩展impl trait</a></li><li class="chapter-item expanded "><a href="chapter_19.html">章节19: 附注: 译RFC 2394async await</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">LifetimeKata</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/thinkgos/lifetimekata" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="类型上的生命周期"><a class="header" href="#类型上的生命周期">类型上的生命周期</a></h1>
+<p>到目前为止, 我们仅讨论了适用于函数的生命周期. 不仅函数是需要明确生命周期的地方, 类型(<code>struct</code>和<code>enum</code>)也是需要生命周期.
+这是因为如果类型中包含了引用, 则用户需要明确其引用的生命周期.
+想象一下, 我们想将<code>＆str</code>分为两个, 并创建一个包含<code>start</code>和<code>end</code>字段的结构吗？
+好吧, 我们可以写个这样的函数:</p>
+<pre><code class="language-rust ignore">struct SplitStr {
+    start: &amp;str,
+    end: &amp;str
+}
+
+fn split&lt;'text, 'delim&gt;(text: &amp;'text str, delimiter: &amp;'delim str) -&gt; Option&lt;SplitStr&gt; {
+    let (start, end) = text.split_once(delimiter)?;
+    
+    Some(SplitStr {
+        start,
+        end
+    })
+}
+
+<span class="boring">fn main() {}</span></code></pre>
+<p>我们完成了! 正确吗？
+好吧, 这些字符串引用可以存活多长时间.
+如果我们这样调用函数该怎么办:</p>
+<pre><code class="language-rust ignore"><span class="boring">struct SplitStr {
+</span><span class="boring">    start: &amp;str,
+</span><span class="boring">    end: &amp;str
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn split&lt;'text, 'delim&gt;(text: &amp;'text str, delimiter: &amp;'delim str) -&gt; Option&lt;SplitStr&gt; {
+</span><span class="boring">    let (start, end) = text.split_once(delimiter)?;
+</span><span class="boring">    
+</span><span class="boring">    Some(SplitStr {
+</span><span class="boring">        start,
+</span><span class="boring">        end
+</span><span class="boring">    })
+</span><span class="boring">}
+</span>
+fn main() {
+    let mut parts_of_string: Option&lt;SplitStr&gt; = None;
+    {
+        let my_string = String::from("First line;Second line");
+        parts_of_string = split(&amp;my_string, ";");
+    }
+    
+    println!("{parts_of_string:?}");
+}</code></pre>
+<p>好吧, <code>SplitStr</code>结构内的引用现在悬空了, 因为它们都指向<code>my_string</code>. 但它仅存活在括号内.</p>
+<p>因此, <code>Rust</code>要求我们指定结构内所有引用的生命周期. 这是我们修复代码的方式:</p>
+<pre><pre class="playground"><code class="language-rust">struct SplitStr&lt;'str_lifetime&gt; {
+    start: &amp;'str_lifetime str,
+    end: &amp;'str_lifetime str
+}
+
+fn split&lt;'text, 'delim&gt;(text: &amp;'text str, delimiter: &amp;'delim str) -&gt; Option&lt;SplitStr&lt;'text&gt;&gt; {
+    let (start, end) = text.split_once(delimiter)?;
+    
+    Some(SplitStr {
+        start,
+        end
+    })
+}
+
+<span class="boring">fn main() {}</span></code></pre></pre>
+<p>现在, 当我们返回一个<code>Option&lt;SplitStr&lt;'text&gt;&gt;</code>, 编译器会知道结构体内部的引用必须与<code>'text</code>生命周期相同,
+如果我们试图返回一个<code>SplitStr</code>, 其中引用无法活到<code>'text</code>, 那将编译错误.</p>
+<h2 id="关于枚举的说明"><a class="header" href="#关于枚举的说明">关于枚举的说明</a></h2>
+<p>在枚举中, 引用的使用方式与在结构体中的使用方式完全相同. 我们在这里不详细展开说明, 因为它们是可以互换的.</p>
+<pre><pre class="playground"><code class="language-rust">enum StringOption&lt;'a&gt; {
+    Some(&amp;'a str),
+    None
+}
+<span class="boring">fn main() {}</span></code></pre></pre>
+<h2 id="两个生命周期"><a class="header" href="#两个生命周期">两个生命周期</a></h2>
+<p>有时候, 结构体上会有多个生命周期. 这种情况发生在结构体内部的数据来自两个不同位置, 具有两个不同的生命周期.</p>
+<p>以找出两个句子中独特单词的程序为例.</p>
+<p>你可以将第一个句子设为：<code>"I love to swim and surf."</code>, 第二个句子设为：<code>"I love to ski and snowboard."</code>. 第一个句子中独特的单词是<code>"swim"</code>和<code>"surf"</code>. 第二个句子中独特的单词是<code>"ski"</code>和<code>"snowboard"</code>.</p>
+<p>如果您说这两个句子必须共享一个生命周期, 您将迫使用户确保这两个句子来自同一个地方, 因此具有相同的生命周期. 但如果第一个句子来自在整个程序运行过程中保持打开的文件, 而第二个句子是在一个循环内部扫描出来的呢?</p>
+<p>在这种情况下, 编译器会坚持认为扫描到的值在整个程序中都被保存, 这将不够方便.</p>
+<h2 id="练习-结构体上的两个生命周期"><a class="header" href="#练习-结构体上的两个生命周期">练习: 结构体上的两个生命周期</a></h2>
+<p>在这个练习中, 我们将修改一个小程序, 该程序用于查找两个字符串之间的唯一单词. 目前, 它没有任何生命周期注解, 因此无法编译.</p>
+<p>我们的目标是返回一个结构体, 其中包含来自第一个字符串的所有唯一单词, 以及来自第二个字符串的所有唯一单词. 它们应该具有分开的生命周期.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="chapter_4.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="chapter_6.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="chapter_4.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="chapter_6.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
