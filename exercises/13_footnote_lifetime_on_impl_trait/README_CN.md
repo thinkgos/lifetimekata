@@ -1,7 +1,7 @@
-# `impl trait`生命周期省略规则规则
+# `impl trait`生命周期省略规则
 
 - [RFC 1591]`impl trait`生命周期, `impl trait` 作为返回值, 只捕获类型参数, 不捕获参数生命周期
-- [RFC 2394]`async fn return impl Future`, 不同与手写 `impl trait`, `async fn` 会返回匿名 `impl Future + 参数生命周期`
+- [RFC 2394]`async fn return impl Future`, 不同于手写 `impl trait`, `async fn` 会返回匿名 `impl Future + 参数生命周期`
 
 ## `impl trait`生命周期
 
@@ -20,7 +20,7 @@ fn f1<T: Foo>(t: T) -> Box<impl Foo> {
 }
 ```
 
-上述示例是可以编译通过的, `impl Foo`会捕获`T`, 即使`T`是个引用, 因为`T`有指定生命周期, 它们的生命周期是一样的, 所以将会展开如下:
+上述示例是可以编译通过的, `impl Foo`会捕获`T`, 即使`T`是个引用, 因为`T`本身就有指定生命周期, 它们的生命周期是一样的.
 
 与`trait`对象对比, 以下示例与上述唯一不同, 返回的是一个`Box<dyn Foo>`, 是否可以编译通过?
 
@@ -47,7 +47,7 @@ fn f2<T: Foo>(t: T) -> Box<dyn Foo + 'static> {
 对于`T`不仅有可能是所有权类型, 也有可能是不可变引用或可变引用, 这些引用传进来时, 就包含自己的生命周期.
 生命周期不匹配, 所以编译不能通过.
 
-我们相以增加`'_`让`trait`使用通用的生命周期省略规则, 或约束`T`为`'static`.
+我们可以增加`'_`让`trait`使用通用的生命周期省略规则, 或约束`T`为`'static`.
 
 ```rust
 trait Foo {}
@@ -114,7 +114,7 @@ fn f4(s: &str) -> Box<dyn Foo + 'static> {
 }
 ```
 
-我们相以增加`'_`让`trait`使用通用的生命周期省略规则, 或约束`&str`为`&'static str`.
+我们可以增加`'_`让`trait`使用通用的生命周期省略规则, 或约束`&str`为`&'static str`.
 即使
 `fn f4(s: &str) -> Box<dyn Foo + '_>`或`fn f4(s: &static str) -> Box<dyn Foo + 'static>`.
 

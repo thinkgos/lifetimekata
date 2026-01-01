@@ -1,0 +1,1 @@
+../../exercises/15_footnote_unifying_borrow_and_reborrow_via_access/README_CN.md

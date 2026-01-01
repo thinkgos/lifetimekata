@@ -1,0 +1,1 @@
+../../exercises/16_footnote_rfc_599/README_CN.md

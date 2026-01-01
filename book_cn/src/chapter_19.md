@@ -1,0 +1,1 @@
+../../exercises/19_footnote_frc_2394/README_CN.md
