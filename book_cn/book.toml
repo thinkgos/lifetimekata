@@ -7,7 +7,6 @@ title = "LifetimeKata"
 [build]
 extra-watch-dirs = ["../exercises"]
 
-[preprocessor.keeper]
 [preprocessor.footnote]
 
 [output.html]
